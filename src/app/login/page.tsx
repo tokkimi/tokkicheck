@@ -70,10 +70,6 @@ function LoginForm() {
           회원가입
         </Link>
       </p>
-      <div className="mt-8 rounded-xl bg-brand-soft px-4 py-3 text-xs text-gray-600">
-        데모 계정 · 관리자: admin@tokkicheck.kr / Admin1234!<br />
-        데모 계정 · 사용자: user@tokkicheck.kr / User1234!
-      </div>
     </div>
   );
 }
