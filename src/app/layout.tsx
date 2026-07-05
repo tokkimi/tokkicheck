@@ -13,6 +13,13 @@ export const metadata: Metadata = {
   title: "톡키체크 | 대한민국 식품 성분·안전 정보",
   description:
     "대한민국에서 판매되는 식품의 제조국, 칼로리, 성분, 제조 안전 정보를 한눈에 확인하는 톡키체크입니다.",
+  icons: {
+    icon: [
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+  },
 };
 
 export const viewport: Viewport = {
