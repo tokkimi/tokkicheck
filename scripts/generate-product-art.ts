@@ -15,6 +15,7 @@ const categoryColor: Record<string, [string, string]> = {
   sauce: ["#84cc16", "#a3e635"],
   convenience: ["#8b5cf6", "#a78bfa"],
   health: ["#10b981", "#34d399"],
+  pet: ["#b45309", "#d97706"],
 };
 
 function esc(s: string) {
@@ -105,10 +106,11 @@ function backSvg(p: ProductDef, countryKo: string): string {
 const iconByCategory: Record<string, string> = {
   snack: "🍪", ramen: "🍜", beverage: "🥤", dairy: "🥛", frozen: "🧊",
   bakery: "🥐", icecream: "🍦", sauce: "🧂", convenience: "🍱", health: "💊",
+  pet: "🐾",
 };
 
 const countryByCode: Record<string, string> = {
-  KR: "대한민국", CN: "중국", VN: "베트남", TH: "태국", US: "미국", JP: "일본",
+  KR: "대한민국", CN: "중국", VN: "베트남", TH: "태국", US: "미국", JP: "일본", FR: "프랑스",
 };
 
 const outDir = join(process.cwd(), "public", "products");
