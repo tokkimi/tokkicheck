@@ -26,18 +26,59 @@
 }
 
 /*
- * 시스템이 다크 모드일 때, 컴포넌트 곳곳에 하드코딩된 Tailwind 회색/빨강/
+ * 다크 모드일 때, 컴포넌트 곳곳에 하드코딩된 Tailwind 회색/빨강/
  * 호박색 팔레트(text-gray-900 등)가 어두운 배경과 겹쳐 보이지 않는 문제를
  * 막기 위해, 해당 팔레트 자체를 다크 모드용 값으로 재정의합니다.
  * (컴포넌트 클래스는 그대로 두고 팔레트 변수만 전역으로 뒤집는 방식)
+ *
+ * data-theme 속성은 ThemeToggle이 localStorage 설정에 따라 <html>에 붙입니다.
+ * - data-theme="dark"  : 시스템 설정과 무관하게 항상 다크
+ * - data-theme="light" : 시스템 설정과 무관하게 항상 라이트
+ * - 속성 없음(시스템 모드) : prefers-color-scheme을 따름
  */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --background: #11171a;
+  --foreground: #f3f4f6;
+  --surface: rgba(255, 255, 255, 0.07);
+  --brand: #34d399;
+  --brand-dark: #6ee7b7;
+  --brand-soft: rgba(52, 211, 153, 0.16);
+  --border: rgba(255, 255, 255, 0.14);
+
+  --color-gray-900: #f3f4f6;
+  --color-gray-800: #e5e7eb;
+  --color-gray-700: #d1d5db;
+  --color-gray-600: #b0b8c1;
+  --color-gray-500: #9aa5b1;
+  --color-gray-400: #838d99;
+  --color-gray-300: #5b6570;
+
+  --color-red-50: rgba(248, 113, 113, 0.14);
+  --color-red-100: rgba(248, 113, 113, 0.2);
+  --color-red-200: rgba(248, 113, 113, 0.35);
+  --color-red-300: rgba(248, 113, 113, 0.45);
+  --color-red-700: #fca5a5;
+  --color-red-800: #fecaca;
+  --color-red-900: #fee2e2;
+
+  --color-amber-50: rgba(251, 191, 36, 0.14);
+  --color-amber-100: rgba(251, 191, 36, 0.2);
+  --color-amber-200: rgba(251, 191, 36, 0.35);
+  --color-amber-300: rgba(251, 191, 36, 0.45);
+  --color-amber-600: #fbbf24;
+  --color-amber-700: #fcd34d;
+  --color-amber-800: #fde68a;
+
+  --color-emerald-100: rgba(52, 211, 153, 0.2);
+  --color-emerald-700: #6ee7b7;
+}
+
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]):not([data-theme="dark"]) {
     color-scheme: dark;
     --background: #11171a;
     --foreground: #f3f4f6;
-    /* 카드/프레임은 불투명한 진한 색 대신, 배경 위에 밝은 반투명 레이어를
-       올리는 방식으로 만들어서 배경과 또렷이 구분되면서도 은은하게 비치도록 함 */
     --surface: rgba(255, 255, 255, 0.07);
     --brand: #34d399;
     --brand-dark: #6ee7b7;

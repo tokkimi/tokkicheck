@@ -83,6 +83,7 @@ model Product {
   countryId     String
   imageFront    String
   imageBack     String?
+  imageCredit   String?
   calories      Int?
   servingSizeG  Int?
   carbsG        Float?

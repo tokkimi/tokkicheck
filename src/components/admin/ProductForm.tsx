@@ -35,6 +35,7 @@ type ProductDefaults = {
   originCountryCodes?: string[];
   imageFront?: string;
   imageBack?: string | null;
+  imageCredit?: string | null;
   calories?: number | null;
   servingSizeG?: number | null;
   carbsG?: number | null;
@@ -169,6 +170,17 @@ export function ProductForm({
           />
         </Field>
       </div>
+      <Field
+        label="Source / crédit de la photo (facultatif)"
+        hint="Si vous utilisez une vraie photo, indiquez ici son origine (ex. photo prise par vos soins, autorisation du fabricant, image sous licence libre avec nom de l'auteur). Affiché sous la photo sur la fiche produit."
+      >
+        <input
+          name="imageCredit"
+          defaultValue={product?.imageCredit ?? ""}
+          placeholder="예: 제조사 제공 이미지 / 자체 촬영"
+          className="input"
+        />
+      </Field>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         <Field label="Calories (kcal)">

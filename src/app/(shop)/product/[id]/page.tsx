@@ -69,6 +69,11 @@ export default async function ProductDetailPage({
           back={product.imageBack}
           alt={product.nameKo}
         />
+        {product.imageCredit && (
+          <p className="mt-1.5 text-right text-[11px] text-gray-400">
+            사진 출처: {product.imageCredit}
+          </p>
+        )}
       </div>
 
       <div className="mt-4 px-4">

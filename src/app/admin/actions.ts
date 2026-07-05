@@ -100,6 +100,7 @@ async function buildProductData(formData: FormData) {
     originCountryCodes: codesList(formData, "originCountryCodes"),
     imageFront: imageFrontData || imageFrontUrl || undefined,
     imageBack: imageBackData || imageBackUrl || null,
+    imageCredit: str(formData, "imageCredit") || null,
     calories: numOrNull(formData, "calories"),
     servingSizeG: numOrNull(formData, "servingSizeG"),
     carbsG: numOrNull(formData, "carbsG"),
