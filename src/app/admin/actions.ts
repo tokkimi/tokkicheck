@@ -1,0 +1,281 @@
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { prisma } from "@/lib/prisma";
+import { requireAdmin } from "@/lib/authz";
+import { runWeeklyAiDiscovery } from "@/lib/ai-discovery";
+
+const MAX_IMAGE_BYTES = 2_000_000;
+
+async function fileToDataUrl(file: File | null): Promise<string | null> {
+  if (!file || file.size === 0) return null;
+  if (file.size > MAX_IMAGE_BYTES) {
+    throw new Error("이미지 용량은 2MB 이하여야 합니다.");
+  }
+  if (!file.type.startsWith("image/")) {
+    throw new Error("이미지 파일만 업로드할 수 있습니다.");
+  }
+  const buffer = Buffer.from(await file.arrayBuffer());
+  return `data:${file.type};base64,${buffer.toString("base64")}`;
+}
+
+function str(fd: FormData, key: string): string {
+  return String(fd.get(key) ?? "").trim();
+}
+function numOrNull(fd: FormData, key: string): number | null {
+  const v = str(fd, key);
+  return v === "" ? null : Number(v);
+}
+
+// ---------- Categories ----------
+
+export async function createCategory(formData: FormData) {
+  await requireAdmin();
+  await prisma.category.create({
+    data: {
+      slug: str(formData, "slug"),
+      nameKo: str(formData, "nameKo"),
+      icon: str(formData, "icon") || null,
+      order: Number(str(formData, "order") || "0"),
+    },
+  });
+  revalidatePath("/admin/categories");
+  revalidatePath("/categories");
+  revalidatePath("/");
+}
+
+export async function updateCategory(formData: FormData) {
+  await requireAdmin();
+  const id = str(formData, "id");
+  await prisma.category.update({
+    where: { id },
+    data: {
+      nameKo: str(formData, "nameKo"),
+      icon: str(formData, "icon") || null,
+      order: Number(str(formData, "order") || "0"),
+    },
+  });
+  revalidatePath("/admin/categories");
+  revalidatePath("/categories");
+  revalidatePath("/");
+}
+
+export async function deleteCategory(formData: FormData) {
+  await requireAdmin();
+  const id = str(formData, "id");
+  const count = await prisma.product.count({ where: { categoryId: id } });
+  if (count > 0) {
+    throw new Error("해당 카테고리에 속한 제품이 있어 삭제할 수 없습니다.");
+  }
+  await prisma.category.delete({ where: { id } });
+  revalidatePath("/admin/categories");
+  revalidatePath("/categories");
+}
+
+// ---------- Products ----------
+
+async function buildProductData(formData: FormData) {
+  const imageFrontFile = formData.get("imageFrontFile") as File | null;
+  const imageBackFile = formData.get("imageBackFile") as File | null;
+  const imageFrontUrl = str(formData, "imageFrontUrl");
+  const imageBackUrl = str(formData, "imageBackUrl");
+
+  const imageFrontData = await fileToDataUrl(imageFrontFile);
+  const imageBackData = await fileToDataUrl(imageBackFile);
+
+  return {
+    barcode: str(formData, "barcode") || null,
+    nameKo: str(formData, "nameKo"),
+    brandKo: str(formData, "brandKo"),
+    categoryId: str(formData, "categoryId"),
+    countryId: str(formData, "countryId"),
+    imageFront: imageFrontData || imageFrontUrl || undefined,
+    imageBack: imageBackData || imageBackUrl || null,
+    calories: numOrNull(formData, "calories"),
+    servingSizeG: numOrNull(formData, "servingSizeG"),
+    carbsG: numOrNull(formData, "carbsG"),
+    proteinG: numOrNull(formData, "proteinG"),
+    fatG: numOrNull(formData, "fatG"),
+    sugarG: numOrNull(formData, "sugarG"),
+    sodiumMg: numOrNull(formData, "sodiumMg"),
+    ingredientsKo: str(formData, "ingredientsKo") || null,
+    allergensKo: str(formData, "allergensKo") || null,
+    price: numOrNull(formData, "price"),
+    isNew: formData.get("isNew") === "on",
+  };
+}
+
+export async function createProduct(formData: FormData) {
+  await requireAdmin();
+  const data = await buildProductData(formData);
+  if (!data.imageFront) {
+    throw new Error("정면 이미지를 업로드하거나 URL을 입력해주세요.");
+  }
+  const product = await prisma.product.create({
+    data: { ...data, imageFront: data.imageFront },
+  });
+  revalidatePath("/admin/products");
+  revalidatePath("/");
+  redirect(`/admin/products/${product.id}`);
+}
+
+export async function updateProduct(formData: FormData) {
+  await requireAdmin();
+  const id = str(formData, "id");
+  const data = await buildProductData(formData);
+  await prisma.product.update({
+    where: { id },
+    data,
+  });
+  revalidatePath("/admin/products");
+  revalidatePath(`/admin/products/${id}`);
+  revalidatePath(`/product/${id}`);
+  revalidatePath("/");
+}
+
+export async function deleteProduct(formData: FormData) {
+  await requireAdmin();
+  const id = str(formData, "id");
+  await prisma.manufacturingIssue.deleteMany({ where: { productId: id } });
+  await prisma.productRating.deleteMany({ where: { productId: id } });
+  await prisma.product.delete({ where: { id } });
+  revalidatePath("/admin/products");
+  revalidatePath("/");
+}
+
+// ---------- Manufacturing issues ----------
+
+export async function createIssue(formData: FormData) {
+  await requireAdmin();
+  const productId = str(formData, "productId");
+  await prisma.manufacturingIssue.create({
+    data: {
+      productId: productId || null,
+      countryId: str(formData, "countryId") || null,
+      titleKo: str(formData, "titleKo"),
+      descriptionKo: str(formData, "descriptionKo"),
+      videoUrl: str(formData, "videoUrl"),
+      sourceUrl: str(formData, "sourceUrl") || null,
+      severity: Number(str(formData, "severity") || "1"),
+    },
+  });
+  revalidatePath("/admin/issues");
+  if (productId) revalidatePath(`/admin/products/${productId}`);
+  revalidatePath("/");
+}
+
+export async function deleteIssue(formData: FormData) {
+  await requireAdmin();
+  const id = str(formData, "id");
+  const issue = await prisma.manufacturingIssue.delete({ where: { id } });
+  revalidatePath("/admin/issues");
+  if (issue.productId) revalidatePath(`/admin/products/${issue.productId}`);
+  revalidatePath("/");
+}
+
+// ---------- Product requests (user submissions) ----------
+
+export async function rejectProductRequest(formData: FormData) {
+  await requireAdmin();
+  const id = str(formData, "id");
+  await prisma.productRequest.update({
+    where: { id },
+    data: {
+      status: "REJECTED",
+      reviewNote: str(formData, "reviewNote") || null,
+      reviewedAt: new Date(),
+    },
+  });
+  revalidatePath("/admin/requests");
+}
+
+export async function approveProductRequest(formData: FormData) {
+  await requireAdmin();
+  const id = str(formData, "requestId");
+  const data = await buildProductData(formData);
+  if (!data.imageFront) {
+    throw new Error("정면 이미지를 업로드하거나 URL을 입력해주세요.");
+  }
+  await prisma.$transaction([
+    prisma.product.create({ data: { ...data, imageFront: data.imageFront } }),
+    prisma.productRequest.update({
+      where: { id },
+      data: { status: "APPROVED", reviewedAt: new Date() },
+    }),
+  ]);
+  revalidatePath("/admin/requests");
+  revalidatePath("/");
+  redirect("/admin/requests");
+}
+
+// ---------- AI discovered products ----------
+
+export async function rejectAiProduct(formData: FormData) {
+  await requireAdmin();
+  const id = str(formData, "id");
+  await prisma.aiDiscoveredProduct.update({
+    where: { id },
+    data: { status: "REJECTED", reviewedAt: new Date() },
+  });
+  revalidatePath("/admin/ai-queue");
+}
+
+export async function approveAiProduct(formData: FormData) {
+  await requireAdmin();
+  const id = str(formData, "aiId");
+  const data = await buildProductData(formData);
+  if (!data.imageFront) {
+    throw new Error("정면 이미지를 업로드하거나 URL을 입력해주세요.");
+  }
+  await prisma.$transaction([
+    prisma.product.create({
+      data: { ...data, imageFront: data.imageFront, isNew: true },
+    }),
+    prisma.aiDiscoveredProduct.update({
+      where: { id },
+      data: { status: "APPROVED", reviewedAt: new Date() },
+    }),
+  ]);
+  revalidatePath("/admin/ai-queue");
+  revalidatePath("/");
+  redirect("/admin/ai-queue");
+}
+
+export async function runAiScanNow() {
+  await requireAdmin();
+  await runWeeklyAiDiscovery();
+  revalidatePath("/admin/ai-queue");
+}
+
+// ---------- Users ----------
+
+export async function updateUser(formData: FormData) {
+  const session = await requireAdmin();
+  const id = str(formData, "id");
+  if (id === session.user.id) {
+    throw new Error("본인 계정은 이 화면에서 수정할 수 없습니다.");
+  }
+  const role = str(formData, "role");
+  await prisma.user.update({
+    where: { id },
+    data: {
+      name: str(formData, "name"),
+      role: role === "ADMIN" ? "ADMIN" : "USER",
+      banned: formData.get("banned") === "on",
+    },
+  });
+  revalidatePath("/admin/users");
+}
+
+export async function deleteUser(formData: FormData) {
+  const session = await requireAdmin();
+  const id = str(formData, "id");
+  if (id === session.user.id) {
+    throw new Error("본인 계정은 삭제할 수 없습니다.");
+  }
+  await prisma.productRating.deleteMany({ where: { userId: id } });
+  await prisma.productRequest.deleteMany({ where: { userId: id } });
+  await prisma.user.delete({ where: { id } });
+  revalidatePath("/admin/users");
+}

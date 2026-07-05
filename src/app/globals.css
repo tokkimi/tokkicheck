@@ -1,0 +1,74 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f4f6f5;
+  --foreground: #111827;
+  --surface: #ffffff;
+  --brand: #0ea472;
+  --brand-dark: #0b7d59;
+  --brand-soft: #e3f6ee;
+  --danger: #e53e3e;
+  --warning: #f59e0b;
+  --border: #e5e7eb;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-brand: var(--brand);
+  --color-brand-dark: var(--brand-dark);
+  --color-brand-soft: var(--brand-soft);
+  --color-danger: var(--danger);
+  --color-warning: var(--warning);
+  --color-border: var(--border);
+  --font-sans: var(--font-noto-sans-kr);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0f1512;
+    --foreground: #f3f4f6;
+    --surface: #161f1a;
+    --brand: #22c98a;
+    --brand-dark: #17a874;
+    --brand-soft: #16302514;
+    --border: #263129;
+  }
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  overscroll-behavior-y: none;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--foreground) 15%, transparent);
+  border-radius: 999px;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.input {
+  @apply w-full rounded-xl border border-border bg-surface px-3 py-2 text-sm outline-none focus:border-brand;
+}

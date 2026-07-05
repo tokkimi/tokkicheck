@@ -1,0 +1,150 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum RequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model User {
+  id        String    @id @default(cuid())
+  email     String    @unique
+  password  String
+  name      String
+  role      Role      @default(USER)
+  banned    Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  requests  ProductRequest[]
+  ratings   ProductRating[]
+}
+
+model Category {
+  id        String    @id @default(cuid())
+  slug      String    @unique
+  nameKo    String
+  icon      String?
+  order     Int       @default(0)
+
+  products  Product[]
+}
+
+model Country {
+  id        String    @id @default(cuid())
+  code      String    @unique
+  nameKo    String
+
+  products  Product[]
+  issues    ManufacturingIssue[]
+}
+
+model Product {
+  id             String    @id @default(cuid())
+  barcode        String?   @unique
+  nameKo         String
+  brandKo        String
+  categoryId     String
+  countryId      String
+  imageFront     String
+  imageBack      String?
+  calories       Int?
+  servingSizeG   Int?
+  carbsG         Float?
+  proteinG       Float?
+  fatG           Float?
+  sugarG         Float?
+  sodiumMg       Float?
+  ingredientsKo  String?
+  allergensKo    String?
+  price          Int?
+  isNew          Boolean   @default(false)
+  publishedAt    DateTime  @default(now())
+  ratingAvg      Float     @default(0)
+  ratingCount    Int       @default(0)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  category       Category  @relation(fields: [categoryId], references: [id])
+  country        Country   @relation(fields: [countryId], references: [id])
+  issues         ManufacturingIssue[]
+  ratings        ProductRating[]
+
+  @@index([categoryId])
+  @@index([countryId])
+  @@index([isNew])
+}
+
+model ManufacturingIssue {
+  id           String    @id @default(cuid())
+  productId    String?
+  countryId    String?
+  titleKo      String
+  descriptionKo String
+  videoUrl     String
+  sourceUrl    String?
+  severity     Int       @default(1)
+  createdAt    DateTime  @default(now())
+
+  product      Product?  @relation(fields: [productId], references: [id])
+  country      Country?  @relation(fields: [countryId], references: [id])
+}
+
+model ProductRating {
+  id         String   @id @default(cuid())
+  productId  String
+  userId     String
+  score      Int
+  createdAt  DateTime @default(now())
+
+  product    Product  @relation(fields: [productId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
+
+  @@unique([productId, userId])
+}
+
+model ProductRequest {
+  id            String        @id @default(cuid())
+  userId        String
+  nameKo        String
+  brandKo       String
+  categoryId    String?
+  countryNameKo String?
+  imageFront    String?
+  imageBack     String?
+  note          String?
+  status        RequestStatus @default(PENDING)
+  reviewNote    String?
+  createdAt     DateTime      @default(now())
+  reviewedAt    DateTime?
+
+  user          User          @relation(fields: [userId], references: [id])
+}
+
+model AiDiscoveredProduct {
+  id            String        @id @default(cuid())
+  nameKo        String
+  brandKo       String
+  categorySlug  String?
+  countryNameKo String?
+  sourceStore   String?
+  sourceUrl     String?
+  imageFront    String?
+  calories      Int?
+  rawNote       String?
+  status        RequestStatus @default(PENDING)
+  discoveredAt  DateTime      @default(now())
+  reviewedAt    DateTime?
+}
