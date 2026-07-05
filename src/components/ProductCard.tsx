@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { AlertTriangle, ShieldAlert, Star } from "lucide-react";
 import { FavoriteButton } from "@/components/FavoriteButton";
-import { countryFlags } from "@/lib/countryFlag";
+import { CountryFlags } from "@/components/CountryFlag";
 
 type CardProduct = {
   id: string;
@@ -58,13 +58,12 @@ export function ProductCard({ product }: { product: CardProduct }) {
           size={15}
           className="absolute bottom-2 right-2 h-7 w-7 bg-white/90 shadow"
         />
-        <span
-          className="absolute bottom-2 left-2 rounded-full bg-black/55 px-2 py-1 text-sm leading-none"
-          title={product.country.nameKo}
-          aria-label={`제조국 ${product.country.nameKo}`}
-        >
-          {countryFlags(product.country.code, product.originCountryCodes)}
-        </span>
+        <CountryFlags
+          primaryCode={product.country.code}
+          extraCodes={product.originCountryCodes}
+          primaryLabel={product.country.nameKo}
+          className="absolute bottom-2 left-2 flex items-center gap-1 rounded-md bg-black/55 px-1.5 py-1"
+        />
       </div>
       {allergenWarning.length > 0 && (
         <div className="flex items-center gap-1 bg-amber-100 px-2.5 py-1 text-[10px] font-bold text-amber-800">

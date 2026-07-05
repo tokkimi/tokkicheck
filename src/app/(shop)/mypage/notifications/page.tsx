@@ -20,7 +20,7 @@ export default async function NotificationsPage() {
   const hasUnread = notifications.some((n) => !n.read);
 
   return (
-    <div className="px-4 py-4">
+    <div className="px-4 py-4 md:mx-auto md:max-w-2xl">
       <div className="mb-1 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Link

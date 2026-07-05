@@ -33,7 +33,7 @@ function LoginForm() {
   }
 
   return (
-    <div className="px-5 py-8">
+    <div className="px-5 py-8 md:mx-auto md:max-w-md">
       <h1 className="mb-1 text-2xl font-extrabold">로그인</h1>
       <p className="mb-6 text-sm text-gray-500">
         톡키체크 계정으로 로그인하세요.

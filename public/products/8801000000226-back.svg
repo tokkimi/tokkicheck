@@ -26,5 +26,6 @@
   <text x="34" y="266" font-size="11.5" fill="#4b5563" font-family="sans-serif"><tspan x="34" dy="0">굴추출물, 설탕, 전분, 캐러멜색</tspan><tspan x="34" dy="18">소</tspan></text>
   <text x="34" y="356" font-size="12" font-weight="700" fill="#b91c1c" font-family="sans-serif">알레르기 정보</text>
   <text x="34" y="374" font-size="11.5" fill="#b91c1c" font-family="sans-serif">굴(조개류) 함유</text>
-  <text x="34" y="392" font-size="14" font-family="sans-serif">제조국: 🇨🇳</text>
+  <text x="34" y="392" font-size="11" fill="#374151" font-family="sans-serif">제조국:</text>
+  <svg x="68" y="382" width="20" height="14" viewBox="0 0 30 20"><rect width="30" height="20" fill="#de2910"/><circle cx="7" cy="6" r="2.4" fill="#ffde00"/></svg>
 </svg>

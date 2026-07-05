@@ -59,7 +59,7 @@ export default function ScanPage() {
   }, []);
 
   return (
-    <div className="flex flex-col items-center px-4 py-4">
+    <div className="flex flex-col items-center px-4 py-4 md:mx-auto md:max-w-2xl">
       <h1 className="mb-1 flex items-center gap-2 self-start text-xl font-extrabold text-gray-900">
         <ScanLine size={22} className="text-brand" />
         제품 스캔

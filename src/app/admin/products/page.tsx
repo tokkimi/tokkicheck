@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { deleteProduct } from "@/app/admin/actions";
-import { countryFlags } from "@/lib/countryFlag";
+import { CountryFlags } from "@/components/CountryFlag";
 
 export const dynamic = "force-dynamic";
 
@@ -61,9 +61,13 @@ export default async function AdminProductsPage({
                   <span className="text-danger">⚠</span>
                 )}
               </p>
-              <p className="truncate text-xs text-gray-500">
+              <p className="flex items-center gap-1 truncate text-xs text-gray-500">
                 {p.brandKo} · {p.category.nameKo} ·{" "}
-                {countryFlags(p.country.code, p.originCountryCodes)}
+                <CountryFlags
+                  primaryCode={p.country.code}
+                  extraCodes={p.originCountryCodes}
+                  primaryLabel={p.country.nameKo}
+                />
               </p>
             </div>
             <Link

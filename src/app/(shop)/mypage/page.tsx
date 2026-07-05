@@ -52,7 +52,7 @@ export default async function MyPage() {
     : 0;
 
   return (
-    <div className="px-4 py-4">
+    <div className="px-4 py-4 md:mx-auto md:max-w-2xl">
       <div className="flex items-center justify-between rounded-2xl border border-border bg-surface p-4">
         <div>
           <p className="flex items-center gap-1.5 text-base font-extrabold text-gray-900">

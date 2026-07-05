@@ -47,7 +47,7 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="px-5 py-8">
+    <div className="px-5 py-8 md:mx-auto md:max-w-md">
       <h1 className="mb-1 text-2xl font-extrabold">회원가입</h1>
       <p className="mb-6 text-sm text-gray-500">
         가입하면 제품 등록을 요청하고 평점을 남길 수 있어요.

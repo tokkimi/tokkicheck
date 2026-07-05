@@ -5,7 +5,7 @@ export const metadata = { title: "이용약관 | 톡키체크" };
 
 export default function TermsPage() {
   return (
-    <div className="px-4 py-4">
+    <div className="px-4 py-4 md:mx-auto md:max-w-2xl">
       <Link
         href="/mypage"
         className="mb-4 inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-black/5"

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AlertTriangle, ChevronLeft, NotebookPen, PlayCircle, ShieldAlert } from "lucide-react";
 import { getProductDetail } from "@/lib/queries";
-import { countryFlags } from "@/lib/countryFlag";
+import { CountryFlags } from "@/components/CountryFlag";
 import { overlappingAllergens } from "@/lib/allergens";
 import { ProductImageFlip } from "@/components/ProductImageFlip";
 import { RatingWidget } from "@/components/RatingWidget";
@@ -48,7 +48,7 @@ export default async function ProductDetailPage({
   const allergenWarning = overlappingAllergens(product.allergenTags, currentUser?.allergenTags ?? []);
 
   return (
-    <div className="pb-8">
+    <div className="pb-8 md:mx-auto md:max-w-2xl">
       <div className="flex items-center gap-2 px-4 py-3">
         <Link
           href="/"
@@ -77,12 +77,14 @@ export default async function ProductDetailPage({
               NEW
             </span>
           )}
-          <span
-            className="flex items-center gap-1 rounded-full bg-brand-soft px-2 py-0.5 font-semibold text-brand-dark"
-            title={product.country.nameKo}
-            aria-label={`제조국 ${product.country.nameKo}`}
-          >
-            제조국 · <span className="text-sm leading-none">{countryFlags(product.country.code, product.originCountryCodes)}</span>
+          <span className="flex items-center gap-1.5 rounded-full bg-brand-soft px-2 py-0.5 font-semibold text-brand-dark">
+            제조국
+            <CountryFlags
+              primaryCode={product.country.code}
+              extraCodes={product.originCountryCodes}
+              primaryLabel={product.country.nameKo}
+              flagClassName="h-3 w-4"
+            />
           </span>
         </div>
         <div className="flex items-start justify-between gap-2">

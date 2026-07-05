@@ -16,7 +16,7 @@ export default async function ProgramsPage() {
   ]);
 
   return (
-    <div className="px-4 py-4">
+    <div className="px-4 py-4 md:mx-auto md:max-w-2xl">
       <div className="mb-1 flex items-center gap-2">
         <Link
           href="/mypage"

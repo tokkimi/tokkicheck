@@ -26,5 +26,6 @@
   <text x="34" y="266" font-size="11.5" fill="#4b5563" font-family="sans-serif"><tspan x="34" dy="0">밀가루, 우유, 설탕, 이스트</tspan></text>
   <text x="34" y="356" font-size="12" font-weight="700" fill="#b91c1c" font-family="sans-serif">알레르기 정보</text>
   <text x="34" y="374" font-size="11.5" fill="#b91c1c" font-family="sans-serif">밀, 우유 함유</text>
-  <text x="34" y="392" font-size="14" font-family="sans-serif">제조국: 🇰🇷</text>
+  <text x="34" y="392" font-size="11" fill="#374151" font-family="sans-serif">제조국:</text>
+  <svg x="68" y="382" width="20" height="14" viewBox="0 0 30 20"><rect width="30" height="20" fill="#ffffff"/><path d="M15 4.5a5.5 5.5 0 0 1 0 11 2.75 2.75 0 0 1 0-5.5 2.75 2.75 0 0 0 0-5.5z" fill="#cd2e3a"/><path d="M15 4.5a5.5 5.5 0 0 0 0 11 2.75 2.75 0 0 0 0-5.5 2.75 2.75 0 0 1 0-5.5z" fill="#0047a0"/></svg>
 </svg>

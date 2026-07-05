@@ -5,7 +5,7 @@ export const metadata = { title: "개인정보처리방침 | 톡키체크" };
 
 export default function PrivacyPage() {
   return (
-    <div className="px-4 py-4">
+    <div className="px-4 py-4 md:mx-auto md:max-w-2xl">
       <Link
         href="/mypage"
         className="mb-4 inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-black/5"

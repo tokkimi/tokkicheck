@@ -3,7 +3,7 @@ import { ChevronLeft, PlayCircle } from "lucide-react";
 
 export default function ProductionVideoPlaceholderPage() {
   return (
-    <div className="px-4 py-4">
+    <div className="px-4 py-4 md:mx-auto md:max-w-2xl">
       <Link
         href="/"
         className="mb-4 inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-black/5"

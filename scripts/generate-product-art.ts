@@ -3,7 +3,7 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { products, type ProductDef } from "../prisma/seed-data";
-import { countryCodeToFlag } from "../src/lib/countryFlag";
+import { flagInnerSvg } from "../src/lib/countryFlagSvg";
 
 const categoryColor: Record<string, [string, string]> = {
   snack: ["#f59e0b", "#fbbf24"],
@@ -100,7 +100,8 @@ function backSvg(p: ProductDef, countryCode: string): string {
   <text x="34" y="266" font-size="11.5" fill="#4b5563" font-family="sans-serif">${ingSvg}</text>
   <text x="34" y="356" font-size="12" font-weight="700" fill="#b91c1c" font-family="sans-serif">알레르기 정보</text>
   <text x="34" y="374" font-size="11.5" fill="#b91c1c" font-family="sans-serif">${esc(p.allergensKo)}</text>
-  <text x="34" y="392" font-size="14" font-family="sans-serif">제조국: ${countryCodeToFlag(countryCode)}</text>
+  <text x="34" y="392" font-size="11" fill="#374151" font-family="sans-serif">제조국:</text>
+  <svg x="68" y="382" width="20" height="14" viewBox="0 0 30 20">${flagInnerSvg(countryCode)}</svg>
 </svg>`;
 }
 

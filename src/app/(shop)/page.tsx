@@ -33,7 +33,7 @@ export default async function HomePage() {
 
   return (
     <div className="flex flex-col gap-6 pb-6 pt-4">
-      <div className="px-4">
+      <div className="px-4 md:mx-auto md:max-w-2xl md:w-full">
         <p className="text-sm text-gray-500">
           대한민국 판매 식품, 성분부터 제조 안전까지
         </p>
@@ -117,7 +117,7 @@ export default async function HomePage() {
 
       <section>
         <SectionHeader title="🏆 인기 랭킹" subtitle="사용자 평점 기준" />
-        <div className="flex flex-col gap-2 px-4">
+        <div className="grid grid-cols-1 gap-2 px-4 lg:grid-cols-2 xl:grid-cols-3">
           {topRanked.slice(0, 6).map((p, i) => (
             <Link
               key={p.id}

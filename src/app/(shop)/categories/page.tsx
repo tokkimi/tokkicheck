@@ -9,7 +9,7 @@ export default async function CategoriesPage() {
   return (
     <div className="px-4 py-4">
       <h1 className="mb-4 text-xl font-extrabold text-gray-900">카테고리</h1>
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-6">
         {categories.map((c) => (
           <Link
             key={c.id}

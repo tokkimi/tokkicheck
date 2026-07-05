@@ -11,7 +11,7 @@ export default async function NewProductRequestPage() {
   const categories = await getCategories();
 
   return (
-    <div className="px-4 py-4">
+    <div className="px-4 py-4 md:mx-auto md:max-w-2xl">
       <div className="mb-4 flex items-center gap-2">
         <Link
           href="/mypage"
