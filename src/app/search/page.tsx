@@ -1,15 +1,18 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Search, X } from "lucide-react";
 import { ProductCard } from "@/components/ProductCard";
 
 type SearchProduct = Parameters<typeof ProductCard>[0]["product"];
 
-export default function SearchPage() {
-  const [query, setQuery] = useState("");
+function SearchPageInner() {
+  const searchParams = useSearchParams();
+  const initialQuery = searchParams.get("q") ?? "";
+  const [query, setQuery] = useState(initialQuery);
   const [results, setResults] = useState<SearchProduct[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(Boolean(initialQuery.trim()));
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const trimmedQuery = query.trim();
@@ -76,5 +79,13 @@ export default function SearchPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense>
+      <SearchPageInner />
+    </Suspense>
   );
 }

@@ -82,7 +82,12 @@ export default async function ProductDetailPage({
         </div>
         <div className="flex items-start justify-between gap-2">
           <div>
-            <p className="mt-2 text-sm text-gray-400">{product.brandKo}</p>
+            <Link
+              href={`/search?q=${encodeURIComponent(product.brandKo)}`}
+              className="mt-2 inline-block text-sm text-gray-400 underline-offset-2 hover:underline"
+            >
+              {product.brandKo}
+            </Link>
             <h1 className="text-2xl font-extrabold text-gray-900">
               {product.nameKo}
             </h1>

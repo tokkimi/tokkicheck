@@ -7,6 +7,7 @@ import { auth } from "@/auth";
 import {
   getCategories,
   getFlaggedProducts,
+  getMadeInKoreaProducts,
   getNewArrivals,
   getTopRanked,
   enrichProductsForUser,
@@ -16,16 +17,18 @@ export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
   const session = await auth();
-  const [categories, newArrivalsRaw, topRankedRaw, flaggedRaw] = await Promise.all([
+  const [categories, newArrivalsRaw, topRankedRaw, flaggedRaw, madeInKoreaRaw] = await Promise.all([
     getCategories(),
     getNewArrivals(),
     getTopRanked(),
     getFlaggedProducts(),
+    getMadeInKoreaProducts(10),
   ]);
-  const [newArrivals, topRanked, flagged] = await Promise.all([
+  const [newArrivals, topRanked, flagged, madeInKorea] = await Promise.all([
     enrichProductsForUser(newArrivalsRaw, session?.user?.id),
     enrichProductsForUser(topRankedRaw, session?.user?.id),
     enrichProductsForUser(flaggedRaw, session?.user?.id),
+    enrichProductsForUser(madeInKoreaRaw, session?.user?.id),
   ]);
 
   return (
@@ -72,6 +75,21 @@ export default async function HomePage() {
         />
         <ScrollRow>
           {newArrivals.map((p) => (
+            <div key={p.id} className="w-36 shrink-0 sm:w-40">
+              <ProductCard product={p} />
+            </div>
+          ))}
+        </ScrollRow>
+      </section>
+
+      <section>
+        <SectionHeader
+          title="🇰🇷 메이드 인 코리아"
+          subtitle="100% 대한민국 제조 제품"
+          href="/made-in-korea"
+        />
+        <ScrollRow>
+          {madeInKorea.map((p) => (
             <div key={p.id} className="w-36 shrink-0 sm:w-40">
               <ProductCard product={p} />
             </div>

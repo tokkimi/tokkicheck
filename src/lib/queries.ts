@@ -98,6 +98,15 @@ export function getProductsByCategory(categorySlug: string) {
   });
 }
 
+export function getMadeInKoreaProducts(take?: number) {
+  return prisma.product.findMany({
+    where: { country: { code: "KR" } },
+    orderBy: { publishedAt: "desc" },
+    take,
+    select: productCard,
+  });
+}
+
 export async function getDiaryEntries(userId: string, dateStr: string) {
   const start = new Date(`${dateStr}T00:00:00.000Z`);
   const end = new Date(`${dateStr}T23:59:59.999Z`);
