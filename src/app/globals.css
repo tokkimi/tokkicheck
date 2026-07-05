@@ -25,16 +25,54 @@
   --font-sans: var(--font-noto-sans-kr);
 }
 
+/*
+ * 시스템이 다크 모드일 때, 컴포넌트 곳곳에 하드코딩된 Tailwind 회색/빨강/
+ * 호박색 팔레트(text-gray-900 등)가 어두운 배경과 겹쳐 보이지 않는 문제를
+ * 막기 위해, 해당 팔레트 자체를 다크 모드용 값으로 재정의합니다.
+ * (컴포넌트 클래스는 그대로 두고 팔레트 변수만 전역으로 뒤집는 방식)
+ */
 @media (prefers-color-scheme: dark) {
   :root {
+    color-scheme: dark;
     --background: #0f1512;
     --foreground: #f3f4f6;
     --surface: #161f1a;
     --brand: #22c98a;
-    --brand-dark: #17a874;
-    --brand-soft: #16302514;
-    --border: #263129;
+    --brand-dark: #34d399;
+    --brand-soft: #123526;
+    --border: #2b3630;
+
+    --color-gray-900: #f3f4f6;
+    --color-gray-800: #e5e7eb;
+    --color-gray-700: #d1d5db;
+    --color-gray-600: #b0b8c1;
+    --color-gray-500: #9aa5b1;
+    --color-gray-400: #838d99;
+    --color-gray-300: #5b6570;
+
+    --color-red-50: #2a1416;
+    --color-red-100: #34181b;
+    --color-red-200: #5b262b;
+    --color-red-300: #7a323a;
+    --color-red-700: #fca5a5;
+    --color-red-800: #fecaca;
+    --color-red-900: #fee2e2;
+
+    --color-amber-50: #2a2110;
+    --color-amber-100: #332813;
+    --color-amber-200: #6b5320;
+    --color-amber-300: #86682a;
+    --color-amber-600: #fbbf24;
+    --color-amber-700: #fcd34d;
+    --color-amber-800: #fde68a;
+
+    --color-emerald-100: #113127;
+    --color-emerald-700: #6ee7b7;
   }
+}
+
+html {
+  font-size: 17.5px;
 }
 
 html,
