@@ -7,9 +7,9 @@
 
 - **Next.js 16** (App Router, Turbopack, Server Actions) + TypeScript
 - **Tailwind CSS v4**
-- **Prisma 7** + SQLite (`better-sqlite3` 드라이버 어댑터) — 운영 환경에서는
-  Postgres 등으로 쉽게 교체 가능 (`prisma/schema.prisma`의 `datasource`와
-  `src/lib/prisma.ts`의 어댑터만 교체)
+- **Prisma 7** + **PostgreSQL** (`@prisma/adapter-pg` 드라이버 어댑터) —
+  Vercel의 서버리스 환경은 파일시스템이 읽기 전용이라 SQLite를 쓸 수 없으므로
+  Postgres를 사용합니다 (Vercel Postgres/Neon/Supabase 등 아무 Postgres나 가능)
 - **Auth.js (NextAuth v5)** — 이메일/비밀번호 로그인, JWT 세션, 역할 기반 접근
   제어(USER/ADMIN)
 - **@zxing/browser** — 카메라 바코드 스캔
@@ -19,15 +19,15 @@
 
 ```bash
 npm install
-npx prisma migrate dev   # 최초 1회: DB 생성 + 마이그레이션
+npx prisma migrate dev   # 최초 1회: DB 마이그레이션 (로컬 Postgres 필요)
 npm run db:seed          # 데모 카테고리/제품/계정 시딩
 npm run dev
 ```
 
-`.env` 파일에 다음 값이 필요합니다 (로컬 개발용 기본값은 이미 채워져 있음):
+`.env` 파일에 다음 값이 필요합니다:
 
 ```
-DATABASE_URL="file:./prisma/dev.db"
+DATABASE_URL="postgresql://user:password@localhost:5432/tokkicheck"
 AUTH_SECRET="..."          # openssl rand -base64 32 로 생성 권장
 NEXTAUTH_URL="http://localhost:3000"
 CRON_SECRET="..."          # 주간 AI 스캔 엔드포인트 보호용
@@ -72,8 +72,17 @@ ANTHROPIC_API_KEY="..."    # (선택) 주간 AI 신상품 스캔에 사용, 없�
   않고) 동작하며, 실제 운영 시엔 편의점/유통사 신제품 피드 등 실데이터
   소스를 크롤링하는 파이프라인으로 교체하는 것을 권장합니다.
 
-## 배포
+## 배포 (Vercel)
 
-Vercel 배포 시 `vercel.json`에 정의된 cron이 자동 등록됩니다. `CRON_SECRET`
-환경변수를 설정하면 Vercel이 자동으로 `Authorization: Bearer <CRON_SECRET>`
-헤더를 실어 보내며, 라우트 핸들러가 이를 검증합니다.
+1. Vercel 프로젝트의 **Storage** 탭에서 Postgres 데이터베이스를 하나 연결
+   (Neon 등, 무료 플랜 가능) — 연결하면 `DATABASE_URL`이 자동으로 프로젝트
+   환경변수에 주입됩니다.
+2. `AUTH_SECRET`, `NEXTAUTH_URL`(배포 도메인), `CRON_SECRET` 환경변수를
+   프로젝트 설정에 추가합니다.
+3. 최초 1회 `npx prisma migrate deploy && npm run db:seed`를 배포된
+   `DATABASE_URL`을 가리키도록 로컬에서 실행(또는 CI 스텝으로 실행)하여
+   스키마와 데모 데이터를 반영합니다.
+4. `vercel.json`에 정의된 cron이 자동 등록되어 매주 금요일
+   `/api/cron/weekly-ai-scan`을 호출합니다. `CRON_SECRET` 환경변수를
+   설정하면 Vercel이 자동으로 `Authorization: Bearer <CRON_SECRET>` 헤더를
+   실어 보내며, 라우트 핸들러가 이를 검증합니다.
