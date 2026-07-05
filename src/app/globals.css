@@ -34,13 +34,15 @@
 @media (prefers-color-scheme: dark) {
   :root {
     color-scheme: dark;
-    --background: #0f1512;
+    --background: #11171a;
     --foreground: #f3f4f6;
-    --surface: #161f1a;
-    --brand: #22c98a;
-    --brand-dark: #34d399;
-    --brand-soft: #123526;
-    --border: #2b3630;
+    /* 카드/프레임은 불투명한 진한 색 대신, 배경 위에 밝은 반투명 레이어를
+       올리는 방식으로 만들어서 배경과 또렷이 구분되면서도 은은하게 비치도록 함 */
+    --surface: rgba(255, 255, 255, 0.07);
+    --brand: #34d399;
+    --brand-dark: #6ee7b7;
+    --brand-soft: rgba(52, 211, 153, 0.16);
+    --border: rgba(255, 255, 255, 0.14);
 
     --color-gray-900: #f3f4f6;
     --color-gray-800: #e5e7eb;
@@ -50,23 +52,23 @@
     --color-gray-400: #838d99;
     --color-gray-300: #5b6570;
 
-    --color-red-50: #2a1416;
-    --color-red-100: #34181b;
-    --color-red-200: #5b262b;
-    --color-red-300: #7a323a;
+    --color-red-50: rgba(248, 113, 113, 0.14);
+    --color-red-100: rgba(248, 113, 113, 0.2);
+    --color-red-200: rgba(248, 113, 113, 0.35);
+    --color-red-300: rgba(248, 113, 113, 0.45);
     --color-red-700: #fca5a5;
     --color-red-800: #fecaca;
     --color-red-900: #fee2e2;
 
-    --color-amber-50: #2a2110;
-    --color-amber-100: #332813;
-    --color-amber-200: #6b5320;
-    --color-amber-300: #86682a;
+    --color-amber-50: rgba(251, 191, 36, 0.14);
+    --color-amber-100: rgba(251, 191, 36, 0.2);
+    --color-amber-200: rgba(251, 191, 36, 0.35);
+    --color-amber-300: rgba(251, 191, 36, 0.45);
     --color-amber-600: #fbbf24;
     --color-amber-700: #fcd34d;
     --color-amber-800: #fde68a;
 
-    --color-emerald-100: #113127;
+    --color-emerald-100: rgba(52, 211, 153, 0.2);
     --color-emerald-700: #6ee7b7;
   }
 }
