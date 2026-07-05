@@ -3,21 +3,29 @@ import { AlertTriangle, Search } from "lucide-react";
 import { ProductCard } from "@/components/ProductCard";
 import { ScrollRow } from "@/components/ScrollRow";
 import { SectionHeader } from "@/components/SectionHeader";
+import { auth } from "@/auth";
 import {
   getCategories,
   getFlaggedProducts,
   getNewArrivals,
   getTopRanked,
+  enrichProductsForUser,
 } from "@/lib/queries";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const [categories, newArrivals, topRanked, flagged] = await Promise.all([
+  const session = await auth();
+  const [categories, newArrivalsRaw, topRankedRaw, flaggedRaw] = await Promise.all([
     getCategories(),
     getNewArrivals(),
     getTopRanked(),
     getFlaggedProducts(),
+  ]);
+  const [newArrivals, topRanked, flagged] = await Promise.all([
+    enrichProductsForUser(newArrivalsRaw, session?.user?.id),
+    enrichProductsForUser(topRankedRaw, session?.user?.id),
+    enrichProductsForUser(flaggedRaw, session?.user?.id),
   ]);
 
   return (

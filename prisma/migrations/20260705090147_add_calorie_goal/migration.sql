@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "User" ADD COLUMN     "calorieGoal" INTEGER NOT NULL DEFAULT 2000;

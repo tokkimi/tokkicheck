@@ -1,9 +1,14 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { AlertTriangle, ChevronLeft, PlayCircle } from "lucide-react";
+import { AlertTriangle, ChevronLeft, NotebookPen, PlayCircle, ShieldAlert } from "lucide-react";
 import { getProductDetail } from "@/lib/queries";
+import { overlappingAllergens } from "@/lib/allergens";
 import { ProductImageFlip } from "@/components/ProductImageFlip";
 import { RatingWidget } from "@/components/RatingWidget";
+import { FavoriteButton } from "@/components/FavoriteButton";
+import { AddToShoppingListButton } from "@/components/AddToShoppingListButton";
+import { auth } from "@/auth";
+import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
@@ -22,8 +27,24 @@ export default async function ProductDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const product = await getProductDetail(id);
+  const [product, session] = await Promise.all([getProductDetail(id), auth()]);
   if (!product) notFound();
+
+  const isFavorited = session?.user?.id
+    ? Boolean(
+        await prisma.favorite.findUnique({
+          where: { userId_productId: { userId: session.user.id, productId: id } },
+        })
+      )
+    : false;
+
+  const currentUser = session?.user?.id
+    ? await prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: { allergenTags: true },
+      })
+    : null;
+  const allergenWarning = overlappingAllergens(product.allergenTags, currentUser?.allergenTags ?? []);
 
   return (
     <div className="pb-8">
@@ -59,10 +80,20 @@ export default async function ProductDetailPage({
             제조국 · {product.country.nameKo}
           </span>
         </div>
-        <p className="mt-2 text-sm text-gray-400">{product.brandKo}</p>
-        <h1 className="text-2xl font-extrabold text-gray-900">
-          {product.nameKo}
-        </h1>
+        <div className="flex items-start justify-between gap-2">
+          <div>
+            <p className="mt-2 text-sm text-gray-400">{product.brandKo}</p>
+            <h1 className="text-2xl font-extrabold text-gray-900">
+              {product.nameKo}
+            </h1>
+          </div>
+          <FavoriteButton
+            productId={product.id}
+            initialFavorited={isFavorited}
+            size={20}
+            className="mt-2 h-10 w-10 shrink-0 border border-border bg-surface shadow-sm"
+          />
+        </div>
         {product.price != null && (
           <p className="mt-1 text-sm font-semibold text-gray-600">
             참고 가격 {product.price.toLocaleString()}원
@@ -104,6 +135,19 @@ export default async function ProductDetailPage({
         />
       </div>
 
+      <div className="mt-3 flex gap-2 px-4">
+        <div className="flex-1">
+          <AddToShoppingListButton productId={product.id} />
+        </div>
+        <Link
+          href={`/mypage/symptoms?productId=${product.id}`}
+          className="flex flex-1 items-center justify-center gap-1.5 rounded-2xl border border-border bg-surface py-2.5 text-xs font-semibold text-gray-600"
+        >
+          <NotebookPen size={14} />
+          증상 기록하기
+        </Link>
+      </div>
+
       <div className="mt-4 px-4">
         <h2 className="mb-2 text-base font-bold text-gray-900">영양성분표</h2>
         <p className="mb-2 text-xs text-gray-500">
@@ -130,6 +174,18 @@ export default async function ProductDetailPage({
           {product.ingredientsKo ?? "정보 없음"}
         </p>
       </div>
+
+      {allergenWarning.length > 0 && (
+        <div className="mx-4 mt-4 flex items-start gap-2.5 rounded-2xl border border-amber-300 bg-amber-50 p-4">
+          <ShieldAlert size={18} className="mt-0.5 shrink-0 text-amber-600" />
+          <div>
+            <p className="text-sm font-bold text-amber-800">
+              내 알레르기 설정과 일치하는 성분이 있어요
+            </p>
+            <p className="mt-0.5 text-xs text-amber-700">{allergenWarning.join(", ")}</p>
+          </div>
+        </div>
+      )}
 
       <div className="mt-4 px-4">
         <h2 className="mb-2 text-base font-bold text-gray-900">알레르기 정보</h2>

@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../src/generated/prisma/client";
 import { categories, countries, products } from "./seed-data";
+import { parseAllergenTags } from "../src/lib/allergens";
 
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
 const prisma = new PrismaClient({ adapter });
@@ -91,7 +92,7 @@ async function main() {
 
     const product = await prisma.product.upsert({
       where: { barcode: p.barcode },
-      update: {},
+      update: { allergenTags: parseAllergenTags(p.allergensKo) },
       create: {
         barcode: p.barcode,
         nameKo: p.nameKo,
@@ -109,6 +110,7 @@ async function main() {
         sodiumMg: p.sodiumMg,
         ingredientsKo: p.ingredientsKo,
         allergensKo: p.allergensKo,
+        allergenTags: parseAllergenTags(p.allergensKo),
         price: p.price,
         isNew: p.isNew,
         ratingAvg: 3.2 + Math.random() * 1.6,
@@ -150,6 +152,41 @@ async function main() {
         status: "PENDING",
       },
     });
+  }
+
+  const templateBarcodes = {
+    BREAKFAST: "8801000000172",
+    LUNCH: "8801000000240",
+    DINNER: "8801000000257",
+    SNACK: "8801000000271",
+  } as const;
+
+  const existingTemplate = await prisma.mealProgram.findFirst({
+    where: { isTemplate: true },
+  });
+  if (!existingTemplate) {
+    const template = await prisma.mealProgram.create({
+      data: {
+        nameKo: "균형식 1주 (기본 템플릿)",
+        descriptionKo: "아침·점심·저녁·간식을 검증된 제품으로 구성한 기본 식단입니다.",
+        isTemplate: true,
+      },
+    });
+
+    for (let day = 0; day < 7; day++) {
+      for (const [mealSlot, barcode] of Object.entries(templateBarcodes)) {
+        const product = await prisma.product.findUnique({ where: { barcode } });
+        if (!product) continue;
+        await prisma.mealProgramItem.create({
+          data: {
+            programId: template.id,
+            dayOfWeek: day,
+            mealSlot: mealSlot as "BREAKFAST" | "LUNCH" | "DINNER" | "SNACK",
+            productId: product.id,
+          },
+        });
+      }
+    }
   }
 
   const existingAi = await prisma.aiDiscoveredProduct.findFirst();

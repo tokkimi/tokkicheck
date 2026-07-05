@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { ProductCard } from "@/components/ProductCard";
-import { getCategories, getProductsByCategory } from "@/lib/queries";
+import { auth } from "@/auth";
+import { getCategories, getProductsByCategory, enrichProductsForUser } from "@/lib/queries";
 
 export const dynamic = "force-dynamic";
 
@@ -10,11 +11,13 @@ export default async function CategoryPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+  const session = await auth();
   const categories = await getCategories();
   const category = categories.find((c) => c.slug === slug);
   if (!category) notFound();
 
-  const products = await getProductsByCategory(slug);
+  const productsRaw = await getProductsByCategory(slug);
+  const products = await enrichProductsForUser(productsRaw, session?.user?.id);
 
   return (
     <div className="px-4 py-4">

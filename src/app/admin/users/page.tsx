@@ -44,6 +44,34 @@ export default async function AdminUsersPage() {
               <p className="mt-1 text-xs text-gray-500">
                 {u.email} · 요청 {u._count.requests}건 · 평점 {u._count.ratings}건
               </p>
+              <div className="mt-2 grid grid-cols-2 gap-2">
+                <label className="flex flex-col gap-0.5 text-[11px] font-semibold text-gray-500">
+                  요금제
+                  <select
+                    name="plan"
+                    defaultValue={u.plan}
+                    disabled={isSelf}
+                    className="input"
+                  >
+                    <option value="FREE">FREE</option>
+                    <option value="PREMIUM">PREMIUM</option>
+                  </select>
+                </label>
+                <label className="flex flex-col gap-0.5 text-[11px] font-semibold text-gray-500">
+                  프리미엄 만료일(비우면 무기한)
+                  <input
+                    type="date"
+                    name="premiumUntil"
+                    disabled={isSelf}
+                    defaultValue={
+                      u.premiumUntil
+                        ? new Date(u.premiumUntil).toISOString().slice(0, 10)
+                        : ""
+                    }
+                    className="input"
+                  />
+                </label>
+              </div>
               <div className="mt-2 flex items-center justify-between">
                 <label className="flex items-center gap-1.5 text-xs text-gray-600">
                   <input

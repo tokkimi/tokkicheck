@@ -8,6 +8,7 @@ const tabs = [
   { href: "/admin/issues", label: "제조 안전" },
   { href: "/admin/requests", label: "등록 요청" },
   { href: "/admin/ai-queue", label: "AI 신상품" },
+  { href: "/admin/programs", label: "식단 프로그램" },
   { href: "/admin/users", label: "사용자" },
 ];
 

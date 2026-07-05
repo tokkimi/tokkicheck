@@ -18,69 +18,99 @@ enum RequestStatus {
   REJECTED
 }
 
-model User {
-  id        String    @id @default(cuid())
-  email     String    @unique
-  password  String
-  name      String
-  role      Role      @default(USER)
-  banned    Boolean   @default(false)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+enum PlanTier {
+  FREE
+  PREMIUM
+}
 
-  requests  ProductRequest[]
-  ratings   ProductRating[]
+enum MealSlot {
+  BREAKFAST
+  LUNCH
+  DINNER
+  SNACK
+}
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  password     String
+  name         String
+  role         Role      @default(USER)
+  banned       Boolean   @default(false)
+  plan         PlanTier  @default(FREE)
+  premiumUntil DateTime?
+  hasUsedTrial Boolean   @default(false)
+  allergenTags String[]  @default([])
+  calorieGoal  Int       @default(2000)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  requests      ProductRequest[]
+  ratings       ProductRating[]
+  favorites     Favorite[]
+  foodLogs      FoodLogEntry[]
+  symptomNotes  SymptomNote[]
+  shoppingItems ShoppingListItem[]
+  notifications Notification[]
+  mealPrograms  MealProgram[]
 }
 
 model Category {
-  id        String    @id @default(cuid())
-  slug      String    @unique
-  nameKo    String
-  icon      String?
-  order     Int       @default(0)
+  id     String  @id @default(cuid())
+  slug   String  @unique
+  nameKo String
+  icon   String?
+  order  Int     @default(0)
 
-  products  Product[]
+  products Product[]
 }
 
 model Country {
-  id        String    @id @default(cuid())
-  code      String    @unique
-  nameKo    String
+  id     String @id @default(cuid())
+  code   String @unique
+  nameKo String
 
-  products  Product[]
-  issues    ManufacturingIssue[]
+  products Product[]
+  issues   ManufacturingIssue[]
 }
 
 model Product {
-  id             String    @id @default(cuid())
-  barcode        String?   @unique
-  nameKo         String
-  brandKo        String
-  categoryId     String
-  countryId      String
-  imageFront     String
-  imageBack      String?
-  calories       Int?
-  servingSizeG   Int?
-  carbsG         Float?
-  proteinG       Float?
-  fatG           Float?
-  sugarG         Float?
-  sodiumMg       Float?
-  ingredientsKo  String?
-  allergensKo    String?
-  price          Int?
-  isNew          Boolean   @default(false)
-  publishedAt    DateTime  @default(now())
-  ratingAvg      Float     @default(0)
-  ratingCount    Int       @default(0)
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  id            String   @id @default(cuid())
+  barcode       String?  @unique
+  nameKo        String
+  brandKo       String
+  categoryId    String
+  countryId     String
+  imageFront    String
+  imageBack     String?
+  calories      Int?
+  servingSizeG  Int?
+  carbsG        Float?
+  proteinG      Float?
+  fatG          Float?
+  sugarG        Float?
+  sodiumMg      Float?
+  ingredientsKo String?
+  allergensKo   String?
+  allergenTags  String[] @default([])
+  price         Int?
+  isNew         Boolean  @default(false)
+  publishedAt   DateTime @default(now())
+  ratingAvg     Float    @default(0)
+  ratingCount   Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
-  category       Category  @relation(fields: [categoryId], references: [id])
-  country        Country   @relation(fields: [countryId], references: [id])
-  issues         ManufacturingIssue[]
-  ratings        ProductRating[]
+  category      Category             @relation(fields: [categoryId], references: [id])
+  country       Country              @relation(fields: [countryId], references: [id])
+  issues        ManufacturingIssue[]
+  ratings       ProductRating[]
+  favorites     Favorite[]
+  foodLogs      FoodLogEntry[]
+  symptomNotes  SymptomNote[]
+  shoppingItems ShoppingListItem[]
+  programItems  MealProgramItem[]
+  notifications Notification[]
 
   @@index([categoryId])
   @@index([countryId])
@@ -88,29 +118,29 @@ model Product {
 }
 
 model ManufacturingIssue {
-  id           String    @id @default(cuid())
-  productId    String?
-  countryId    String?
-  titleKo      String
+  id            String   @id @default(cuid())
+  productId     String?
+  countryId     String?
+  titleKo       String
   descriptionKo String
-  videoUrl     String
-  sourceUrl    String?
-  severity     Int       @default(1)
-  createdAt    DateTime  @default(now())
+  videoUrl      String
+  sourceUrl     String?
+  severity      Int      @default(1)
+  createdAt     DateTime @default(now())
 
-  product      Product?  @relation(fields: [productId], references: [id])
-  country      Country?  @relation(fields: [countryId], references: [id])
+  product Product? @relation(fields: [productId], references: [id])
+  country Country? @relation(fields: [countryId], references: [id])
 }
 
 model ProductRating {
-  id         String   @id @default(cuid())
-  productId  String
-  userId     String
-  score      Int
-  createdAt  DateTime @default(now())
+  id        String   @id @default(cuid())
+  productId String
+  userId    String
+  score     Int
+  createdAt DateTime @default(now())
 
-  product    Product  @relation(fields: [productId], references: [id])
-  user       User     @relation(fields: [userId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
+  user    User    @relation(fields: [userId], references: [id])
 
   @@unique([productId, userId])
 }
@@ -130,7 +160,7 @@ model ProductRequest {
   createdAt     DateTime      @default(now())
   reviewedAt    DateTime?
 
-  user          User          @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id])
 }
 
 model AiDiscoveredProduct {
@@ -147,4 +177,99 @@ model AiDiscoveredProduct {
   status        RequestStatus @default(PENDING)
   discoveredAt  DateTime      @default(now())
   reviewedAt    DateTime?
+}
+
+model Favorite {
+  id        String   @id @default(cuid())
+  userId    String
+  productId String
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+}
+
+model FoodLogEntry {
+  id        String   @id @default(cuid())
+  userId    String
+  productId String
+  quantity  Float    @default(1)
+  calories  Int
+  loggedAt  DateTime @default(now())
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([userId, loggedAt])
+}
+
+model SymptomNote {
+  id        String   @id @default(cuid())
+  userId    String
+  productId String
+  note      String
+  severity  Int      @default(1)
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model ShoppingListItem {
+  id         String   @id @default(cuid())
+  userId     String
+  productId  String?
+  customName String?
+  checked    Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+}
+
+model MealProgram {
+  id            String   @id @default(cuid())
+  ownerUserId   String?
+  nameKo        String
+  descriptionKo String?
+  isTemplate    Boolean  @default(false)
+  createdAt     DateTime @default(now())
+
+  owner User?             @relation(fields: [ownerUserId], references: [id], onDelete: Cascade)
+  items MealProgramItem[]
+}
+
+model MealProgramItem {
+  id        String   @id @default(cuid())
+  programId String
+  dayOfWeek Int
+  mealSlot  MealSlot
+  productId String
+
+  program MealProgram @relation(fields: [programId], references: [id], onDelete: Cascade)
+  product Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([programId])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  productId String?
+  titleKo   String
+  bodyKo    String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+
+  @@index([userId, read])
 }

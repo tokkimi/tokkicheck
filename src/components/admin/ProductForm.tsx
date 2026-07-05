@@ -1,3 +1,5 @@
+import { ALLERGENS } from "@/lib/allergens";
+
 type Category = { id: string; nameKo: string; icon: string | null };
 type Country = { id: string; nameKo: string; code: string };
 
@@ -19,6 +21,7 @@ type ProductDefaults = {
   sodiumMg?: number | null;
   ingredientsKo?: string | null;
   allergensKo?: string | null;
+  allergenTags?: string[];
   price?: number | null;
   isNew?: boolean;
 };
@@ -166,9 +169,31 @@ export function ProductForm({
       <Field label="원재료명">
         <textarea name="ingredientsKo" rows={2} defaultValue={product?.ingredientsKo ?? ""} className="input" />
       </Field>
-      <Field label="알레르기 정보">
+      <Field label="알레르기 정보 (표시 문구)">
         <textarea name="allergensKo" rows={2} defaultValue={product?.allergensKo ?? ""} className="input" />
       </Field>
+
+      <div>
+        <p className="mb-1 text-xs font-semibold text-gray-600">
+          알레르기 표준 태그 (개인 알림 매칭용)
+        </p>
+        <div className="grid grid-cols-3 gap-1.5">
+          {ALLERGENS.map((tag) => (
+            <label
+              key={tag}
+              className="flex items-center gap-1.5 rounded-lg border border-border px-2 py-1.5 text-[11px] text-gray-700"
+            >
+              <input
+                type="checkbox"
+                name="allergenTags"
+                value={tag}
+                defaultChecked={product?.allergenTags?.includes(tag)}
+              />
+              {tag}
+            </label>
+          ))}
+        </div>
+      </div>
 
       <label className="flex items-center gap-2 text-sm text-gray-700">
         <input type="checkbox" name="isNew" defaultChecked={product?.isNew} />

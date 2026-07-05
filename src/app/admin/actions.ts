@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/authz";
 import { runWeeklyAiDiscovery } from "@/lib/ai-discovery";
+import { notifyFavoritedUsersOfIssue } from "@/lib/notifications";
 
 const MAX_IMAGE_BYTES = 2_000_000;
 
@@ -101,6 +102,7 @@ async function buildProductData(formData: FormData) {
     sodiumMg: numOrNull(formData, "sodiumMg"),
     ingredientsKo: str(formData, "ingredientsKo") || null,
     allergensKo: str(formData, "allergensKo") || null,
+    allergenTags: formData.getAll("allergenTags").map(String),
     price: numOrNull(formData, "price"),
     isNew: formData.get("isNew") === "on",
   };
@@ -149,17 +151,20 @@ export async function deleteProduct(formData: FormData) {
 export async function createIssue(formData: FormData) {
   await requireAdmin();
   const productId = str(formData, "productId");
+  const countryId = str(formData, "countryId");
+  const titleKo = str(formData, "titleKo");
   await prisma.manufacturingIssue.create({
     data: {
       productId: productId || null,
-      countryId: str(formData, "countryId") || null,
-      titleKo: str(formData, "titleKo"),
+      countryId: countryId || null,
+      titleKo,
       descriptionKo: str(formData, "descriptionKo"),
       videoUrl: str(formData, "videoUrl"),
       sourceUrl: str(formData, "sourceUrl") || null,
       severity: Number(str(formData, "severity") || "1"),
     },
   });
+  await notifyFavoritedUsersOfIssue({ productId: productId || null, countryId: countryId || null, titleKo });
   revalidatePath("/admin/issues");
   if (productId) revalidatePath(`/admin/products/${productId}`);
   revalidatePath("/");
@@ -257,12 +262,16 @@ export async function updateUser(formData: FormData) {
     throw new Error("본인 계정은 이 화면에서 수정할 수 없습니다.");
   }
   const role = str(formData, "role");
+  const plan = str(formData, "plan");
+  const premiumUntilStr = str(formData, "premiumUntil");
   await prisma.user.update({
     where: { id },
     data: {
       name: str(formData, "name"),
       role: role === "ADMIN" ? "ADMIN" : "USER",
       banned: formData.get("banned") === "on",
+      plan: plan === "PREMIUM" ? "PREMIUM" : "FREE",
+      premiumUntil: premiumUntilStr ? new Date(premiumUntilStr) : null,
     },
   });
   revalidatePath("/admin/users");
@@ -278,4 +287,52 @@ export async function deleteUser(formData: FormData) {
   await prisma.productRequest.deleteMany({ where: { userId: id } });
   await prisma.user.delete({ where: { id } });
   revalidatePath("/admin/users");
+}
+
+// ---------- Meal program templates ----------
+
+export async function createProgramTemplate(formData: FormData) {
+  await requireAdmin();
+  await prisma.mealProgram.create({
+    data: {
+      nameKo: str(formData, "nameKo"),
+      descriptionKo: str(formData, "descriptionKo") || null,
+      isTemplate: true,
+    },
+  });
+  revalidatePath("/admin/programs");
+}
+
+export async function deleteProgramTemplate(formData: FormData) {
+  await requireAdmin();
+  const id = str(formData, "id");
+  await prisma.mealProgramItem.deleteMany({ where: { programId: id } });
+  await prisma.mealProgram.delete({ where: { id } });
+  revalidatePath("/admin/programs");
+}
+
+export async function addProgramTemplateItem(formData: FormData) {
+  await requireAdmin();
+  const programId = str(formData, "programId");
+  const dayOfWeek = Number(str(formData, "dayOfWeek"));
+  const mealSlot = str(formData, "mealSlot");
+  const productId = str(formData, "productId");
+  if (!productId) throw new Error("제품을 선택해주세요.");
+
+  await prisma.mealProgramItem.create({
+    data: {
+      programId,
+      dayOfWeek,
+      mealSlot: mealSlot as "BREAKFAST" | "LUNCH" | "DINNER" | "SNACK",
+      productId,
+    },
+  });
+  revalidatePath("/admin/programs");
+}
+
+export async function deleteProgramTemplateItem(formData: FormData) {
+  await requireAdmin();
+  const id = str(formData, "id");
+  await prisma.mealProgramItem.delete({ where: { id } });
+  revalidatePath("/admin/programs");
 }
