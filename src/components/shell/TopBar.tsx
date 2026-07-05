@@ -18,10 +18,12 @@ export function TopBar() {
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-surface/95 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-        <Link href="/" className="flex shrink-0 items-center gap-1.5">
-          <span className="text-xl">🐰</span>
-          <span className="text-lg font-extrabold tracking-tight text-brand-dark">
-            톡키체크
+        <Link href="/" className="flex shrink-0 items-center gap-2">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/icon-192.png" alt="톡키체크" className="h-8 w-8 rounded-lg" />
+          <span className="text-lg font-extrabold tracking-tight">
+            <span className="text-gray-900">톡키</span>
+            <span className="text-[#c9714f]">체크</span>
           </span>
         </Link>
         <nav className="hidden items-center gap-1 md:flex" aria-label="메뉴">
