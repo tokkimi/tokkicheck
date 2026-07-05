@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { AlertTriangle, ShieldAlert, Star } from "lucide-react";
 import { FavoriteButton } from "@/components/FavoriteButton";
+import { countryFlags } from "@/lib/countryFlag";
 
 type CardProduct = {
   id: string;
@@ -13,6 +14,7 @@ type CardProduct = {
   ratingCount: number;
   category: { nameKo: string; slug: string };
   country: { nameKo: string; code: string };
+  originCountryCodes?: string[];
   _count: { issues: number };
   isFavorited?: boolean;
   allergenWarning?: string[];
@@ -56,8 +58,12 @@ export function ProductCard({ product }: { product: CardProduct }) {
           size={15}
           className="absolute bottom-2 right-2 h-7 w-7 bg-white/90 shadow"
         />
-        <span className="absolute bottom-2 left-2 rounded-full bg-black/55 px-2 py-0.5 text-[10px] font-semibold text-white">
-          {product.country.nameKo}
+        <span
+          className="absolute bottom-2 left-2 rounded-full bg-black/55 px-2 py-1 text-sm leading-none"
+          title={product.country.nameKo}
+          aria-label={`제조국 ${product.country.nameKo}`}
+        >
+          {countryFlags(product.country.code, product.originCountryCodes)}
         </span>
       </div>
       {allergenWarning.length > 0 && (

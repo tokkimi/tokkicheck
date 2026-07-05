@@ -1,4 +1,26 @@
-import { ALLERGENS } from "@/lib/allergens";
+import { ALLERGENS, type AllergenTag } from "@/lib/allergens";
+
+const ALLERGEN_LABEL_FR: Record<AllergenTag, string> = {
+  "난류(계란)": "Œuf",
+  "우유": "Lait",
+  "메밀": "Sarrasin",
+  "땅콩": "Arachide",
+  "대두": "Soja",
+  "밀": "Blé",
+  "고등어": "Maquereau",
+  "게": "Crabe",
+  "새우": "Crevette",
+  "돼지고기": "Porc",
+  "복숭아": "Pêche",
+  "토마토": "Tomate",
+  "아황산류": "Sulfites",
+  "호두": "Noix",
+  "닭고기": "Poulet",
+  "소고기": "Bœuf",
+  "오징어": "Calmar",
+  "조개류(굴·전복·홍합 포함)": "Mollusques (huître, ormeau, moule)",
+  "잣": "Pignon de pin",
+};
 
 type Category = { id: string; nameKo: string; icon: string | null };
 type Country = { id: string; nameKo: string; code: string };
@@ -10,6 +32,7 @@ type ProductDefaults = {
   brandKo?: string;
   categoryId?: string;
   countryId?: string;
+  originCountryCodes?: string[];
   imageFront?: string;
   imageBack?: string | null;
   calories?: number | null;
@@ -48,8 +71,8 @@ export function ProductForm({
         <input key={f.name} type="hidden" name={f.name} value={f.value} />
       ))}
 
-      <div className="grid grid-cols-2 gap-3">
-        <Field label="제품명">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <Field label="Nom du produit">
           <input
             name="nameKo"
             required
@@ -57,7 +80,7 @@ export function ProductForm({
             className="input"
           />
         </Field>
-        <Field label="브랜드명">
+        <Field label="Marque">
           <input
             name="brandKo"
             required
@@ -67,15 +90,15 @@ export function ProductForm({
         </Field>
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
-        <Field label="카테고리">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <Field label="Catégorie">
           <select
             name="categoryId"
             required
             defaultValue={product?.categoryId}
             className="input"
           >
-            <option value="">선택</option>
+            <option value="">Choisir</option>
             {categories.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.icon} {c.nameKo}
@@ -83,24 +106,36 @@ export function ProductForm({
             ))}
           </select>
         </Field>
-        <Field label="제조국">
+        <Field label="Pays de fabrication">
           <select
             name="countryId"
             required
             defaultValue={product?.countryId}
             className="input"
           >
-            <option value="">선택</option>
+            <option value="">Choisir</option>
             {countries.map((c) => (
               <option key={c.id} value={c.id}>
-                {c.nameKo}
+                {c.nameKo} ({c.code})
               </option>
             ))}
           </select>
         </Field>
       </div>
 
-      <Field label="바코드 (선택)">
+      <Field
+        label="Pays d'origine des ingrédients (optionnel, codes séparés par virgule, ex: KR,CN)"
+        hint="Si la composition provient de plusieurs pays, tous les drapeaux correspondants s'afficheront sur la fiche produit en plus du pays de fabrication."
+      >
+        <input
+          name="originCountryCodes"
+          defaultValue={product?.originCountryCodes?.join(", ") ?? ""}
+          placeholder="ex: KR, CN, VN"
+          className="input"
+        />
+      </Field>
+
+      <Field label="Code-barres (optionnel)">
         <input
           name="barcode"
           defaultValue={product?.barcode ?? ""}
@@ -108,11 +143,11 @@ export function ProductForm({
         />
       </Field>
 
-      <div className="grid grid-cols-2 gap-3">
-        <Field label="정면 이미지 업로드">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <Field label="Image de face (fichier)">
           <input type="file" name="imageFrontFile" accept="image/*" className="input" />
         </Field>
-        <Field label="또는 정면 이미지 경로/URL">
+        <Field label="ou URL/chemin de l'image de face">
           <input
             name="imageFrontUrl"
             defaultValue={product?.imageFront ?? ""}
@@ -121,11 +156,11 @@ export function ProductForm({
           />
         </Field>
       </div>
-      <div className="grid grid-cols-2 gap-3">
-        <Field label="후면 이미지 업로드">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <Field label="Image de dos (fichier)">
           <input type="file" name="imageBackFile" accept="image/*" className="input" />
         </Field>
-        <Field label="또는 후면 이미지 경로/URL">
+        <Field label="ou URL/chemin de l'image de dos">
           <input
             name="imageBackUrl"
             defaultValue={product?.imageBack ?? ""}
@@ -135,49 +170,49 @@ export function ProductForm({
         </Field>
       </div>
 
-      <div className="grid grid-cols-3 gap-3">
-        <Field label="칼로리(kcal)">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+        <Field label="Calories (kcal)">
           <input type="number" name="calories" defaultValue={product?.calories ?? undefined} className="input" />
         </Field>
-        <Field label="1회 제공량(g)">
+        <Field label="Portion (g)">
           <input type="number" name="servingSizeG" defaultValue={product?.servingSizeG ?? undefined} className="input" />
         </Field>
-        <Field label="가격(원)">
+        <Field label="Prix (KRW)">
           <input type="number" name="price" defaultValue={product?.price ?? undefined} className="input" />
         </Field>
       </div>
 
-      <div className="grid grid-cols-4 gap-3">
-        <Field label="탄수화물(g)">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <Field label="Glucides (g)">
           <input type="number" step="0.1" name="carbsG" defaultValue={product?.carbsG ?? undefined} className="input" />
         </Field>
-        <Field label="당류(g)">
+        <Field label="Sucres (g)">
           <input type="number" step="0.1" name="sugarG" defaultValue={product?.sugarG ?? undefined} className="input" />
         </Field>
-        <Field label="단백질(g)">
+        <Field label="Protéines (g)">
           <input type="number" step="0.1" name="proteinG" defaultValue={product?.proteinG ?? undefined} className="input" />
         </Field>
-        <Field label="지방(g)">
+        <Field label="Lipides (g)">
           <input type="number" step="0.1" name="fatG" defaultValue={product?.fatG ?? undefined} className="input" />
         </Field>
       </div>
 
-      <Field label="나트륨(mg)">
+      <Field label="Sodium (mg)">
         <input type="number" step="0.1" name="sodiumMg" defaultValue={product?.sodiumMg ?? undefined} className="input" />
       </Field>
 
-      <Field label="원재료명">
+      <Field label="Liste des ingrédients">
         <textarea name="ingredientsKo" rows={2} defaultValue={product?.ingredientsKo ?? ""} className="input" />
       </Field>
-      <Field label="알레르기 정보 (표시 문구)">
+      <Field label="Mention allergènes (texte affiché)">
         <textarea name="allergensKo" rows={2} defaultValue={product?.allergensKo ?? ""} className="input" />
       </Field>
 
       <div>
         <p className="mb-1 text-xs font-semibold text-gray-600">
-          알레르기 표준 태그 (개인 알림 매칭용)
+          Allergènes standards (pour les alertes personnalisées)
         </p>
-        <div className="grid grid-cols-3 gap-1.5">
+        <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3">
           {ALLERGENS.map((tag) => (
             <label
               key={tag}
@@ -189,7 +224,7 @@ export function ProductForm({
                 value={tag}
                 defaultChecked={product?.allergenTags?.includes(tag)}
               />
-              {tag}
+              {ALLERGEN_LABEL_FR[tag]}
             </label>
           ))}
         </div>
@@ -197,7 +232,7 @@ export function ProductForm({
 
       <label className="flex items-center gap-2 text-sm text-gray-700">
         <input type="checkbox" name="isNew" defaultChecked={product?.isNew} />
-        신상품(NEW)으로 표시
+        Afficher comme nouveauté (NEW)
       </label>
 
       <button
@@ -210,11 +245,20 @@ export function ProductForm({
   );
 }
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function Field({
+  label,
+  hint,
+  children,
+}: {
+  label: string;
+  hint?: string;
+  children: React.ReactNode;
+}) {
   return (
     <label className="flex flex-col gap-1 text-xs font-semibold text-gray-600">
       {label}
       {children}
+      {hint && <span className="text-[10px] font-normal text-gray-400">{hint}</span>}
     </label>
   );
 }

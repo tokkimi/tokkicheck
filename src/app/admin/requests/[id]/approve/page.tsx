@@ -20,16 +20,17 @@ export default async function ApproveRequestPage({
 
   return (
     <div>
-      <h2 className="mb-1 text-base font-bold text-gray-900">등록 요청 승인</h2>
+      <h2 className="mb-1 text-base font-bold text-gray-900">Approuver la demande</h2>
       <p className="mb-3 text-xs text-gray-500">
-        사용자가 제출한 정보를 확인하고 부족한 항목(카테고리, 제조국,
-        영양성분 등)을 채운 뒤 승인하세요.
+        Vérifiez les informations envoyées par l&apos;utilisateur et complétez les
+        champs manquants (catégorie, pays de fabrication, valeurs
+        nutritionnelles, etc.) avant d&apos;approuver.
       </p>
       <ProductForm
         action={approveProductRequest}
         categories={categories}
         countries={countries}
-        submitLabel="승인하고 게시"
+        submitLabel="Approuver et publier"
         extraHiddenFields={[{ name: "requestId", value: request.id }]}
         product={{
           nameKo: request.nameKo,

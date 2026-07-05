@@ -3,6 +3,7 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { products, type ProductDef } from "../prisma/seed-data";
+import { countryCodeToFlag } from "../src/lib/countryFlag";
 
 const categoryColor: Record<string, [string, string]> = {
   snack: ["#f59e0b", "#fbbf24"],
@@ -65,7 +66,7 @@ function frontSvg(p: ProductDef, icon: string): string {
 </svg>`;
 }
 
-function backSvg(p: ProductDef, countryKo: string): string {
+function backSvg(p: ProductDef, countryCode: string): string {
   const [c1] = categoryColor[p.categorySlug] ?? ["#64748b", "#94a3b8"];
   const ingLines = wrapText(p.ingredientsKo, 18);
   const ingSvg = ingLines
@@ -99,7 +100,7 @@ function backSvg(p: ProductDef, countryKo: string): string {
   <text x="34" y="266" font-size="11.5" fill="#4b5563" font-family="sans-serif">${ingSvg}</text>
   <text x="34" y="356" font-size="12" font-weight="700" fill="#b91c1c" font-family="sans-serif">알레르기 정보</text>
   <text x="34" y="374" font-size="11.5" fill="#b91c1c" font-family="sans-serif">${esc(p.allergensKo)}</text>
-  <text x="34" y="390" font-size="10" fill="#6b7280" font-family="sans-serif">제조국: ${esc(countryKo)}</text>
+  <text x="34" y="392" font-size="14" font-family="sans-serif">제조국: ${countryCodeToFlag(countryCode)}</text>
 </svg>`;
 }
 
@@ -109,17 +110,13 @@ const iconByCategory: Record<string, string> = {
   pet: "🐾",
 };
 
-const countryByCode: Record<string, string> = {
-  KR: "대한민국", CN: "중국", VN: "베트남", TH: "태국", US: "미국", JP: "일본", FR: "프랑스",
-};
-
 const outDir = join(process.cwd(), "public", "products");
 mkdirSync(outDir, { recursive: true });
 
 for (const p of products) {
   const icon = iconByCategory[p.categorySlug] ?? "🍽️";
   const front = frontSvg(p, icon);
-  const back = backSvg(p, countryByCode[p.countryCode] ?? p.countryCode);
+  const back = backSvg(p, p.countryCode);
   writeFileSync(join(outDir, `${p.barcode}-front.svg`), front, "utf8");
   writeFileSync(join(outDir, `${p.barcode}-back.svg`), back, "utf8");
 }

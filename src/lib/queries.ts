@@ -11,6 +11,7 @@ export const productCard = {
   ratingAvg: true,
   ratingCount: true,
   allergenTags: true,
+  originCountryCodes: true,
   category: { select: { nameKo: true, slug: true } },
   country: { select: { nameKo: true, code: true } },
   _count: { select: { issues: true } },

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AlertTriangle, ChevronLeft, NotebookPen, PlayCircle, ShieldAlert } from "lucide-react";
 import { getProductDetail } from "@/lib/queries";
+import { countryFlags } from "@/lib/countryFlag";
 import { overlappingAllergens } from "@/lib/allergens";
 import { ProductImageFlip } from "@/components/ProductImageFlip";
 import { RatingWidget } from "@/components/RatingWidget";
@@ -76,8 +77,12 @@ export default async function ProductDetailPage({
               NEW
             </span>
           )}
-          <span className="rounded-full bg-brand-soft px-2 py-0.5 font-semibold text-brand-dark">
-            제조국 · {product.country.nameKo}
+          <span
+            className="flex items-center gap-1 rounded-full bg-brand-soft px-2 py-0.5 font-semibold text-brand-dark"
+            title={product.country.nameKo}
+            aria-label={`제조국 ${product.country.nameKo}`}
+          >
+            제조국 · <span className="text-sm leading-none">{countryFlags(product.country.code, product.originCountryCodes)}</span>
           </span>
         </div>
         <div className="flex items-start justify-between gap-2">

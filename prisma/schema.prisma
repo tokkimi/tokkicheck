@@ -93,6 +93,7 @@ model Product {
   ingredientsKo String?
   allergensKo   String?
   allergenTags  String[] @default([])
+  originCountryCodes String[] @default([])
   price         Int?
   isNew         Boolean  @default(false)
   publishedAt   DateTime @default(now())

@@ -5,9 +5,9 @@ import { rejectProductRequest } from "@/app/admin/actions";
 export const dynamic = "force-dynamic";
 
 const statusLabel: Record<string, string> = {
-  PENDING: "검토중",
-  APPROVED: "승인됨",
-  REJECTED: "반려됨",
+  PENDING: "En attente",
+  APPROVED: "Approuvée",
+  REJECTED: "Refusée",
 };
 
 export default async function AdminRequestsPage() {
@@ -19,7 +19,7 @@ export default async function AdminRequestsPage() {
   return (
     <div>
       <h2 className="mb-3 text-base font-bold text-gray-900">
-        사용자 제품 등록 요청
+        Demandes d&apos;ajout de produit
       </h2>
       <div className="flex flex-col gap-2">
         {requests.map((r) => (
@@ -28,7 +28,7 @@ export default async function AdminRequestsPage() {
               <div className="min-w-0">
                 <p className="truncate text-sm font-bold text-gray-900">{r.nameKo}</p>
                 <p className="truncate text-xs text-gray-500">
-                  {r.brandKo} · {r.countryNameKo ?? "제조국 미상"} · 요청자{" "}
+                  {r.brandKo} · {r.countryNameKo ?? "Pays inconnu"} · demandé par{" "}
                   {r.user.name}
                 </p>
                 {r.note && <p className="mt-1 text-xs text-gray-600">{r.note}</p>}
@@ -40,10 +40,10 @@ export default async function AdminRequestsPage() {
             {r.imageFront && (
               <div className="mt-2 flex gap-2">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={r.imageFront} alt="정면" className="h-16 w-16 rounded-lg object-cover" />
+                <img src={r.imageFront} alt="Face" className="h-16 w-16 rounded-lg object-cover" />
                 {r.imageBack && (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={r.imageBack} alt="후면" className="h-16 w-16 rounded-lg object-cover" />
+                  <img src={r.imageBack} alt="Dos" className="h-16 w-16 rounded-lg object-cover" />
                 )}
               </div>
             )}
@@ -53,12 +53,12 @@ export default async function AdminRequestsPage() {
                   href={`/admin/requests/${r.id}/approve`}
                   className="rounded-lg bg-brand px-3 py-1.5 text-xs font-bold text-white"
                 >
-                  승인 처리
+                  Traiter et approuver
                 </Link>
                 <form action={rejectProductRequest} className="flex-1">
                   <input type="hidden" name="id" value={r.id} />
                   <button className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-semibold text-danger">
-                    반려
+                    Refuser
                   </button>
                 </form>
               </div>
@@ -66,7 +66,7 @@ export default async function AdminRequestsPage() {
           </div>
         ))}
         {requests.length === 0 && (
-          <p className="text-xs text-gray-400">등록 요청이 없습니다.</p>
+          <p className="text-xs text-gray-400">Aucune demande pour le moment.</p>
         )}
       </div>
     </div>

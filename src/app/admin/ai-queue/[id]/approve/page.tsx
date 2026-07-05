@@ -23,17 +23,18 @@ export default async function ApproveAiProductPage({
   return (
     <div>
       <h2 className="mb-1 text-base font-bold text-gray-900">
-        AI 발견 신상품 검수
+        Vérification d&apos;une nouveauté IA
       </h2>
       <p className="mb-3 text-xs text-gray-500">
-        AI가 자동 수집한 정보이므로 반드시 사실 여부(칼로리, 성분, 원산지 등)를
-        확인한 뒤 게시하세요.
+        Ces informations ont été collectées automatiquement par l&apos;IA :
+        vérifiez impérativement leur exactitude (calories, ingrédients, origine,
+        etc.) avant de publier.
       </p>
       <ProductForm
         action={approveAiProduct}
         categories={categories}
         countries={countries}
-        submitLabel="검수 완료 후 게시"
+        submitLabel="Valider et publier"
         extraHiddenFields={[{ name: "aiId", value: item.id }]}
         product={{
           nameKo: item.nameKo,

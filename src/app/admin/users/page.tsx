@@ -13,8 +13,8 @@ export default async function AdminUsersPage() {
 
   return (
     <div>
-      <h2 className="mb-3 text-base font-bold text-gray-900">사용자 관리</h2>
-      <div className="flex flex-col gap-2">
+      <h2 className="mb-3 text-base font-bold text-gray-900">Gestion des utilisateurs</h2>
+      <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
         {users.map((u) => {
           const isSelf = u.id === session?.user.id;
           return (
@@ -35,30 +35,30 @@ export default async function AdminUsersPage() {
                   name="role"
                   defaultValue={u.role}
                   disabled={isSelf}
-                  className="input w-28"
+                  className="input w-32"
                 >
-                  <option value="USER">일반</option>
-                  <option value="ADMIN">관리자</option>
+                  <option value="USER">Utilisateur</option>
+                  <option value="ADMIN">Administrateur</option>
                 </select>
               </div>
               <p className="mt-1 text-xs text-gray-500">
-                {u.email} · 요청 {u._count.requests}건 · 평점 {u._count.ratings}건
+                {u.email} · {u._count.requests} demande(s) · {u._count.ratings} avis
               </p>
               <div className="mt-2 grid grid-cols-2 gap-2">
                 <label className="flex flex-col gap-0.5 text-[11px] font-semibold text-gray-500">
-                  요금제
+                  Forfait
                   <select
                     name="plan"
                     defaultValue={u.plan}
                     disabled={isSelf}
                     className="input"
                   >
-                    <option value="FREE">FREE</option>
+                    <option value="FREE">GRATUIT</option>
                     <option value="PREMIUM">PREMIUM</option>
                   </select>
                 </label>
                 <label className="flex flex-col gap-0.5 text-[11px] font-semibold text-gray-500">
-                  프리미엄 만료일(비우면 무기한)
+                  Expiration premium (vide = illimité)
                   <input
                     type="date"
                     name="premiumUntil"
@@ -80,27 +80,27 @@ export default async function AdminUsersPage() {
                     defaultChecked={u.banned}
                     disabled={isSelf}
                   />
-                  이용 정지
+                  Compte suspendu
                 </label>
                 <div className="flex gap-2">
                   <button
                     disabled={isSelf}
                     className="rounded-lg border border-border px-2.5 py-1.5 text-xs font-semibold disabled:opacity-40"
                   >
-                    저장
+                    Enregistrer
                   </button>
                   <button
                     formAction={deleteUser}
                     disabled={isSelf}
                     className="rounded-lg border border-red-200 px-2.5 py-1.5 text-xs font-semibold text-danger disabled:opacity-40"
                   >
-                    삭제
+                    Supprimer
                   </button>
                 </div>
               </div>
               {isSelf && (
                 <p className="mt-1 text-[11px] text-gray-400">
-                  본인 계정은 수정/삭제할 수 없습니다.
+                  Vous ne pouvez pas modifier/supprimer votre propre compte ici.
                 </p>
               )}
             </form>

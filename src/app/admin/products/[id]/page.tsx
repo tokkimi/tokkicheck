@@ -5,6 +5,12 @@ import { ProductForm } from "@/components/admin/ProductForm";
 
 export const dynamic = "force-dynamic";
 
+const severityLabel: Record<number, string> = {
+  1: "Mineur",
+  2: "Attention",
+  3: "Grave",
+};
+
 export default async function EditProductPage({
   params,
 }: {
@@ -23,23 +29,23 @@ export default async function EditProductPage({
 
   return (
     <div>
-      <h2 className="mb-3 text-base font-bold text-gray-900">제품 수정</h2>
+      <h2 className="mb-3 text-base font-bold text-gray-900">Modifier le produit</h2>
       <ProductForm
         action={updateProduct}
         categories={categories}
         countries={countries}
         product={product}
-        submitLabel="저장"
+        submitLabel="Enregistrer"
       />
 
       <div className="mt-8 border-t border-border pt-5">
         <h3 className="mb-3 text-sm font-bold text-danger">
-          제조 안전 주의 관리
+          Gestion des alertes de sécurité sanitaire
         </h3>
 
         <div className="mb-4 flex flex-col gap-2">
           {product.issues.length === 0 && (
-            <p className="text-xs text-gray-400">등록된 이슈가 없습니다.</p>
+            <p className="text-xs text-gray-400">Aucune alerte enregistrée.</p>
           )}
           {product.issues.map((issue) => (
             <div
@@ -49,12 +55,12 @@ export default async function EditProductPage({
               <p className="text-sm font-bold text-red-900">{issue.titleKo}</p>
               <p className="mt-1 text-xs text-red-800">{issue.descriptionKo}</p>
               <p className="mt-1 text-xs text-gray-500">
-                영상: {issue.videoUrl}
+                Vidéo : {issue.videoUrl} · {severityLabel[issue.severity] ?? issue.severity}
               </p>
               <form action={deleteIssue} className="mt-2">
                 <input type="hidden" name="id" value={issue.id} />
                 <button className="rounded-lg border border-red-300 px-2.5 py-1 text-xs font-semibold text-danger">
-                  삭제
+                  Supprimer
                 </button>
               </form>
             </div>
@@ -66,34 +72,34 @@ export default async function EditProductPage({
           <input
             name="titleKo"
             required
-            placeholder="이슈 제목 (예: 비위생적 제조 공정 신고)"
+            placeholder="Titre de l'alerte (ex : procédé de fabrication non hygiénique signalé)"
             className="input"
           />
           <textarea
             name="descriptionKo"
             required
             rows={2}
-            placeholder="상세 설명"
+            placeholder="Description détaillée"
             className="input"
           />
           <input
             name="videoUrl"
             required
-            placeholder="영상 URL (유튜브 등) 또는 내부 경로"
+            placeholder="URL de la vidéo (YouTube, etc.) ou chemin interne"
             className="input"
           />
           <input
             name="sourceUrl"
-            placeholder="출처 URL (선택)"
+            placeholder="URL de la source (optionnel)"
             className="input"
           />
           <select name="severity" defaultValue="1" className="input">
-            <option value="1">경미</option>
-            <option value="2">주의</option>
-            <option value="3">심각</option>
+            <option value="1">Mineur</option>
+            <option value="2">Attention</option>
+            <option value="3">Grave</option>
           </select>
           <button className="rounded-xl bg-danger py-2.5 text-sm font-bold text-white">
-            이슈 등록
+            Enregistrer l&apos;alerte
           </button>
         </form>
       </div>

@@ -12,12 +12,12 @@ export default async function NewProductPage() {
 
   return (
     <div>
-      <h2 className="mb-3 text-base font-bold text-gray-900">새 제품 등록</h2>
+      <h2 className="mb-3 text-base font-bold text-gray-900">Nouveau produit</h2>
       <ProductForm
         action={createProduct}
         categories={categories}
         countries={countries}
-        submitLabel="제품 등록"
+        submitLabel="Créer le produit"
       />
     </div>
   );

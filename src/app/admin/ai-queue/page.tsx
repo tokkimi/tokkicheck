@@ -5,9 +5,9 @@ import { rejectAiProduct, runAiScanNow } from "@/app/admin/actions";
 export const dynamic = "force-dynamic";
 
 const statusLabel: Record<string, string> = {
-  PENDING: "검수 대기",
-  APPROVED: "게시됨",
-  REJECTED: "반려됨",
+  PENDING: "À valider",
+  APPROVED: "Publié",
+  REJECTED: "Refusé",
 };
 
 export default async function AdminAiQueuePage() {
@@ -17,19 +17,19 @@ export default async function AdminAiQueuePage() {
 
   return (
     <div>
-      <div className="mb-1 flex items-center justify-between">
+      <div className="mb-1 flex flex-wrap items-center justify-between gap-2">
         <h2 className="text-base font-bold text-gray-900">
-          AI 신상품 자동 발견 큐
+          File des nouveautés découvertes par l&apos;IA
         </h2>
         <form action={runAiScanNow}>
           <button className="rounded-full bg-brand-dark px-3 py-1.5 text-xs font-bold text-white">
-            지금 스캔 실행
+            Lancer le scan maintenant
           </button>
         </form>
       </div>
       <p className="mb-3 text-xs text-gray-500">
-        매주 금요일 자동 실행되는 AI 스캔이 편의점 등에서 발견한 신상품
-        후보입니다. 검수 후 게시하세요.
+        Chaque vendredi, un scan automatique repère les nouveaux produits en
+        supérette. Vérifiez-les avant de les publier.
       </p>
       <div className="flex flex-col gap-2">
         {items.map((item) => (
@@ -40,8 +40,8 @@ export default async function AdminAiQueuePage() {
                   {item.nameKo}
                 </p>
                 <p className="truncate text-xs text-gray-500">
-                  {item.brandKo} · {item.sourceStore ?? "출처 미상"} ·{" "}
-                  {item.countryNameKo ?? "제조국 미상"}
+                  {item.brandKo} · {item.sourceStore ?? "Source inconnue"} ·{" "}
+                  {item.countryNameKo ?? "Pays inconnu"}
                 </p>
                 {item.rawNote && (
                   <p className="mt-1 text-xs text-gray-600">{item.rawNote}</p>
@@ -57,12 +57,12 @@ export default async function AdminAiQueuePage() {
                   href={`/admin/ai-queue/${item.id}/approve`}
                   className="rounded-lg bg-brand px-3 py-1.5 text-xs font-bold text-white"
                 >
-                  검수 후 게시
+                  Vérifier et publier
                 </Link>
                 <form action={rejectAiProduct} className="flex-1">
                   <input type="hidden" name="id" value={item.id} />
                   <button className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-semibold text-danger">
-                    반려
+                    Refuser
                   </button>
                 </form>
               </div>
@@ -70,7 +70,7 @@ export default async function AdminAiQueuePage() {
           </div>
         ))}
         {items.length === 0 && (
-          <p className="text-xs text-gray-400">발견된 신상품 후보가 없습니다.</p>
+          <p className="text-xs text-gray-400">Aucune nouveauté détectée pour le moment.</p>
         )}
       </div>
     </div>

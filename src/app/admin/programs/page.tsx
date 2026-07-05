@@ -8,12 +8,12 @@ import {
 
 export const dynamic = "force-dynamic";
 
-const DAY_LABELS = ["월", "화", "수", "목", "금", "토", "일"];
+const DAY_LABELS = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
 const SLOT_LABELS: Record<string, string> = {
-  BREAKFAST: "아침",
-  LUNCH: "점심",
-  DINNER: "저녁",
-  SNACK: "간식",
+  BREAKFAST: "Petit-déjeuner",
+  LUNCH: "Déjeuner",
+  DINNER: "Dîner",
+  SNACK: "Collation",
 };
 
 export default async function AdminProgramsPage() {
@@ -33,9 +33,9 @@ export default async function AdminProgramsPage() {
 
   return (
     <div>
-      <h2 className="mb-3 text-base font-bold text-gray-900">식단 프로그램 템플릿 관리</h2>
+      <h2 className="mb-3 text-base font-bold text-gray-900">Modèles de programmes repas</h2>
 
-      <div className="flex flex-col gap-4">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         {templates.map((t) => (
           <div key={t.id} className="rounded-2xl border border-border bg-surface p-3">
             <div className="flex items-start justify-between gap-2">
@@ -46,7 +46,7 @@ export default async function AdminProgramsPage() {
               <form action={deleteProgramTemplate}>
                 <input type="hidden" name="id" value={t.id} />
                 <button className="shrink-0 rounded-lg border border-red-200 px-2.5 py-1 text-xs font-semibold text-danger">
-                  템플릿 삭제
+                  Supprimer le modèle
                 </button>
               </form>
             </div>
@@ -58,17 +58,17 @@ export default async function AdminProgramsPage() {
                   className="flex items-center justify-between rounded-lg bg-background px-2.5 py-1.5 text-xs"
                 >
                   <span>
-                    {DAY_LABELS[item.dayOfWeek]}요일 · {SLOT_LABELS[item.mealSlot]} ·{" "}
+                    {DAY_LABELS[item.dayOfWeek]} · {SLOT_LABELS[item.mealSlot]} ·{" "}
                     {item.product.nameKo}
                   </span>
                   <form action={deleteProgramTemplateItem}>
                     <input type="hidden" name="id" value={item.id} />
-                    <button className="text-danger">삭제</button>
+                    <button className="text-danger">Supprimer</button>
                   </form>
                 </div>
               ))}
               {t.items.length === 0 && (
-                <p className="text-xs text-gray-400">등록된 식사가 없습니다.</p>
+                <p className="text-xs text-gray-400">Aucun repas enregistré.</p>
               )}
             </div>
 
@@ -77,7 +77,7 @@ export default async function AdminProgramsPage() {
               <select name="dayOfWeek" defaultValue="0" className="input">
                 {DAY_LABELS.map((d, i) => (
                   <option key={d} value={i}>
-                    {d}요일
+                    {d}
                   </option>
                 ))}
               </select>
@@ -89,7 +89,7 @@ export default async function AdminProgramsPage() {
                 ))}
               </select>
               <select name="productId" required className="input col-span-2">
-                <option value="">제품 선택</option>
+                <option value="">Choisir un produit</option>
                 {products.map((p) => (
                   <option key={p.id} value={p.id}>
                     {p.nameKo}
@@ -97,7 +97,7 @@ export default async function AdminProgramsPage() {
                 ))}
               </select>
               <button className="col-span-2 rounded-xl bg-brand py-2 text-xs font-bold text-white">
-                식사 추가
+                Ajouter le repas
               </button>
             </form>
           </div>
@@ -105,12 +105,12 @@ export default async function AdminProgramsPage() {
       </div>
 
       <div className="mt-6 border-t border-border pt-4">
-        <h3 className="mb-2 text-sm font-bold text-gray-900">새 템플릿 만들기</h3>
+        <h3 className="mb-2 text-sm font-bold text-gray-900">Créer un nouveau modèle</h3>
         <form action={createProgramTemplate} className="flex flex-col gap-2">
-          <input name="nameKo" required placeholder="템플릿 이름 (예: 균형식 1주)" className="input" />
-          <textarea name="descriptionKo" rows={2} placeholder="설명 (선택)" className="input" />
+          <input name="nameKo" required placeholder="Nom du modèle (ex : équilibré sur 1 semaine)" className="input" />
+          <textarea name="descriptionKo" rows={2} placeholder="Description (optionnel)" className="input" />
           <button className="rounded-xl bg-brand py-2.5 text-sm font-bold text-white">
-            템플릿 생성
+            Créer le modèle
           </button>
         </form>
       </div>

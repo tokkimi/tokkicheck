@@ -12,10 +12,10 @@ const MAX_IMAGE_BYTES = 2_000_000;
 async function fileToDataUrl(file: File | null): Promise<string | null> {
   if (!file || file.size === 0) return null;
   if (file.size > MAX_IMAGE_BYTES) {
-    throw new Error("이미지 용량은 2MB 이하여야 합니다.");
+    throw new Error("L'image doit faire 2 Mo maximum.");
   }
   if (!file.type.startsWith("image/")) {
-    throw new Error("이미지 파일만 업로드할 수 있습니다.");
+    throw new Error("Seuls les fichiers image sont acceptés.");
   }
   const buffer = Buffer.from(await file.arrayBuffer());
   return `data:${file.type};base64,${buffer.toString("base64")}`;
@@ -27,6 +27,12 @@ function str(fd: FormData, key: string): string {
 function numOrNull(fd: FormData, key: string): number | null {
   const v = str(fd, key);
   return v === "" ? null : Number(v);
+}
+function codesList(fd: FormData, key: string): string[] {
+  return str(fd, key)
+    .split(",")
+    .map((c) => c.trim().toUpperCase())
+    .filter(Boolean);
 }
 
 // ---------- Categories ----------
@@ -67,7 +73,7 @@ export async function deleteCategory(formData: FormData) {
   const id = str(formData, "id");
   const count = await prisma.product.count({ where: { categoryId: id } });
   if (count > 0) {
-    throw new Error("해당 카테고리에 속한 제품이 있어 삭제할 수 없습니다.");
+    throw new Error("Impossible de supprimer : des produits appartiennent encore à cette catégorie.");
   }
   await prisma.category.delete({ where: { id } });
   revalidatePath("/admin/categories");
@@ -91,6 +97,7 @@ async function buildProductData(formData: FormData) {
     brandKo: str(formData, "brandKo"),
     categoryId: str(formData, "categoryId"),
     countryId: str(formData, "countryId"),
+    originCountryCodes: codesList(formData, "originCountryCodes"),
     imageFront: imageFrontData || imageFrontUrl || undefined,
     imageBack: imageBackData || imageBackUrl || null,
     calories: numOrNull(formData, "calories"),
@@ -112,7 +119,7 @@ export async function createProduct(formData: FormData) {
   await requireAdmin();
   const data = await buildProductData(formData);
   if (!data.imageFront) {
-    throw new Error("정면 이미지를 업로드하거나 URL을 입력해주세요.");
+    throw new Error("Veuillez importer une image de face ou indiquer une URL.");
   }
   const product = await prisma.product.create({
     data: { ...data, imageFront: data.imageFront },
@@ -200,7 +207,7 @@ export async function approveProductRequest(formData: FormData) {
   const id = str(formData, "requestId");
   const data = await buildProductData(formData);
   if (!data.imageFront) {
-    throw new Error("정면 이미지를 업로드하거나 URL을 입력해주세요.");
+    throw new Error("Veuillez importer une image de face ou indiquer une URL.");
   }
   await prisma.$transaction([
     prisma.product.create({ data: { ...data, imageFront: data.imageFront } }),
@@ -231,7 +238,7 @@ export async function approveAiProduct(formData: FormData) {
   const id = str(formData, "aiId");
   const data = await buildProductData(formData);
   if (!data.imageFront) {
-    throw new Error("정면 이미지를 업로드하거나 URL을 입력해주세요.");
+    throw new Error("Veuillez importer une image de face ou indiquer une URL.");
   }
   await prisma.$transaction([
     prisma.product.create({
@@ -259,7 +266,7 @@ export async function updateUser(formData: FormData) {
   const session = await requireAdmin();
   const id = str(formData, "id");
   if (id === session.user.id) {
-    throw new Error("본인 계정은 이 화면에서 수정할 수 없습니다.");
+    throw new Error("Vous ne pouvez pas modifier votre propre compte depuis cet écran.");
   }
   const role = str(formData, "role");
   const plan = str(formData, "plan");
@@ -281,7 +288,7 @@ export async function deleteUser(formData: FormData) {
   const session = await requireAdmin();
   const id = str(formData, "id");
   if (id === session.user.id) {
-    throw new Error("본인 계정은 삭제할 수 없습니다.");
+    throw new Error("Vous ne pouvez pas supprimer votre propre compte.");
   }
   await prisma.productRating.deleteMany({ where: { userId: id } });
   await prisma.productRequest.deleteMany({ where: { userId: id } });
@@ -317,7 +324,7 @@ export async function addProgramTemplateItem(formData: FormData) {
   const dayOfWeek = Number(str(formData, "dayOfWeek"));
   const mealSlot = str(formData, "mealSlot");
   const productId = str(formData, "productId");
-  if (!productId) throw new Error("제품을 선택해주세요.");
+  if (!productId) throw new Error("Veuillez sélectionner un produit.");
 
   await prisma.mealProgramItem.create({
     data: {

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { deleteProduct } from "@/app/admin/actions";
+import { countryFlags } from "@/lib/countryFlag";
 
 export const dynamic = "force-dynamic";
 
@@ -21,24 +22,25 @@ export default async function AdminProductsPage({
 
   return (
     <div>
-      <div className="mb-3 flex items-center justify-between gap-2">
+      <h2 className="mb-3 text-base font-bold text-gray-900">Produits</h2>
+      <div className="mb-3 flex flex-col items-stretch justify-between gap-2 sm:flex-row">
         <form className="flex-1">
           <input
             name="q"
             defaultValue={q}
-            placeholder="제품명/브랜드 검색"
+            placeholder="Rechercher par nom / marque"
             className="w-full rounded-xl border border-border bg-surface px-3 py-2 text-sm outline-none focus:border-brand"
           />
         </form>
         <Link
           href="/admin/products/new"
-          className="shrink-0 rounded-xl bg-brand px-3 py-2 text-sm font-bold text-white"
+          className="shrink-0 rounded-xl bg-brand px-3 py-2 text-center text-sm font-bold text-white"
         >
-          + 새 제품
+          + Nouveau produit
         </Link>
       </div>
 
-      <div className="flex flex-col gap-2">
+      <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
         {products.map((p) => (
           <div
             key={p.id}
@@ -60,23 +62,27 @@ export default async function AdminProductsPage({
                 )}
               </p>
               <p className="truncate text-xs text-gray-500">
-                {p.brandKo} · {p.category.nameKo} · {p.country.nameKo}
+                {p.brandKo} · {p.category.nameKo} ·{" "}
+                {countryFlags(p.country.code, p.originCountryCodes)}
               </p>
             </div>
             <Link
               href={`/admin/products/${p.id}`}
               className="shrink-0 rounded-lg border border-border px-2.5 py-1.5 text-xs font-semibold text-gray-600"
             >
-              수정
+              Modifier
             </Link>
             <form action={deleteProduct}>
               <input type="hidden" name="id" value={p.id} />
               <button className="shrink-0 rounded-lg border border-red-200 px-2.5 py-1.5 text-xs font-semibold text-danger">
-                삭제
+                Supprimer
               </button>
             </form>
           </div>
         ))}
+        {products.length === 0 && (
+          <p className="text-xs text-gray-400">Aucun produit trouvé.</p>
+        )}
       </div>
     </div>
   );
