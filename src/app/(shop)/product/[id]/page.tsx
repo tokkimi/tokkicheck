@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { AlertTriangle, ChevronLeft, NotebookPen, PlayCircle, ShieldAlert } from "lucide-react";
+import { AlertTriangle, ChevronLeft, NotebookPen, ShieldAlert } from "lucide-react";
 import { getProductDetail } from "@/lib/queries";
 import { CountryFlags } from "@/components/CountryFlag";
+import { IssueVideoPlayer } from "@/components/IssueVideoPlayer";
 import { overlappingAllergens } from "@/lib/allergens";
 import { ProductImageFlip } from "@/components/ProductImageFlip";
 import { RatingWidget } from "@/components/RatingWidget";
@@ -125,15 +126,7 @@ export default async function ProductDetailPage({
               <p className="mt-1 text-xs leading-relaxed text-red-800">
                 {issue.descriptionKo}
               </p>
-              <Link
-                href={issue.videoUrl}
-                target={issue.videoUrl.startsWith("http") ? "_blank" : undefined}
-                rel="noopener noreferrer"
-                className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-danger px-3 py-1.5 text-xs font-bold text-white"
-              >
-                <PlayCircle size={14} />
-                제조 공정 영상 보기
-              </Link>
+              <IssueVideoPlayer videoUrl={issue.videoUrl} />
             </div>
           ))}
         </div>
