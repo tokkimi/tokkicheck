@@ -63,6 +63,17 @@ export default async function ProductDetailPage({
         </span>
       </div>
 
+      {!product.verified && (
+        <div className="mx-4 mb-3 flex items-start gap-2 rounded-2xl border border-amber-300 bg-amber-50 p-3">
+          <ShieldAlert size={16} className="mt-0.5 shrink-0 text-amber-600" />
+          <p className="text-xs leading-relaxed text-amber-800">
+            이 제품은 스캔 시 Open Food Facts 커뮤니티 데이터에서 자동으로
+            가져온 정보로, 톡키체크 관리자의 확인 전입니다. 실제 라벨과 다를
+            수 있으니 참고용으로만 확인해주세요.
+          </p>
+        </div>
+      )}
+
       <div className="px-4">
         <ProductImageFlip
           front={product.imageFront}

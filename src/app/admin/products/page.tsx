@@ -60,6 +60,11 @@ export default async function AdminProductsPage({
                 {p._count.issues > 0 && (
                   <span className="text-danger">⚠</span>
                 )}
+                {!p.verified && (
+                  <span className="ml-1 rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700">
+                    확인 필요
+                  </span>
+                )}
               </p>
               <p className="flex items-center gap-1 truncate text-xs text-gray-500">
                 {p.brandKo} · {p.category.nameKo} ·{" "}

@@ -113,6 +113,7 @@ async function buildProductData(formData: FormData) {
     allergenTags: formData.getAll("allergenTags").map(String),
     price: numOrNull(formData, "price"),
     isNew: formData.get("isNew") === "on",
+    verified: formData.get("verified") === "on",
   };
 }
 

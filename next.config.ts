@@ -11,7 +11,7 @@ const securityHeaders = [
     key: "Content-Security-Policy",
     value: [
       "default-src 'self'",
-      "img-src 'self' data: blob:",
+      "img-src 'self' data: blob: https://images.openfoodfacts.org",
       "media-src 'self' blob: https:",
       "frame-src 'self' https://www.youtube-nocookie.com https://player.vimeo.com",
       // Next.js dev mode needs 'unsafe-eval' for React Fast Refresh/debugging; not used in production builds.

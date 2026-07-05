@@ -48,6 +48,7 @@ type ProductDefaults = {
   allergenTags?: string[];
   price?: number | null;
   isNew?: boolean;
+  verified?: boolean;
 };
 
 export function ProductForm({
@@ -245,6 +246,11 @@ export function ProductForm({
       <label className="flex items-center gap-2 text-sm text-gray-700">
         <input type="checkbox" name="isNew" defaultChecked={product?.isNew} />
         Afficher comme nouveauté (NEW)
+      </label>
+
+      <label className="flex items-center gap-2 text-sm text-gray-700">
+        <input type="checkbox" name="verified" defaultChecked={product?.verified ?? true} />
+        Informations vérifiées par un administrateur
       </label>
 
       <button

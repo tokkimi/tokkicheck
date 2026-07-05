@@ -24,6 +24,7 @@ export const categories: CategoryDef[] = [
   { slug: "convenience", nameKo: "편의점 간편식", icon: "🍱", order: 9 },
   { slug: "health", nameKo: "건강기능식품", icon: "💊", order: 10 },
   { slug: "pet", nameKo: "반려동물 식품", icon: "🐾", order: 11 },
+  { slug: "etc", nameKo: "기타 식품", icon: "📦", order: 12 },
 ];
 
 export type CountryDef = {

@@ -84,6 +84,7 @@ model Product {
   imageFront    String
   imageBack     String?
   imageCredit   String?
+  verified      Boolean  @default(true)
   calories      Int?
   servingSizeG  Int?
   carbsG        Float?
