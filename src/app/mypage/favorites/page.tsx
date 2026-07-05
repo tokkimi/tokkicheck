@@ -1,14 +1,13 @@
 import Link from "next/link";
 import { ChevronLeft, Heart } from "lucide-react";
-import { auth } from "@/auth";
 import { getFavoriteProducts, withAllergenWarning } from "@/lib/queries";
 import { ProductCard } from "@/components/ProductCard";
+import { requireUser } from "@/lib/authz";
 
 export const dynamic = "force-dynamic";
 
 export default async function FavoritesPage() {
-  const session = await auth();
-  if (!session?.user) return null;
+  const session = await requireUser("/mypage/favorites");
 
   const favoriteProducts = await getFavoriteProducts(session.user.id);
   const products = await withAllergenWarning(favoriteProducts, session.user.id);

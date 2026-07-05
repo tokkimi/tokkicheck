@@ -9,7 +9,6 @@ export const dynamic = "force-dynamic";
 
 export default async function AllergensPage() {
   const { userId, isPremium } = await getSessionWithPlan();
-  if (!userId) return null;
 
   const user = await prisma.user.findUnique({
     where: { id: userId },

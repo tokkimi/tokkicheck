@@ -2,10 +2,12 @@ import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { getCategories } from "@/lib/queries";
 import { NewRequestForm } from "@/components/NewRequestForm";
+import { requireUser } from "@/lib/authz";
 
 export const dynamic = "force-dynamic";
 
 export default async function NewProductRequestPage() {
+  await requireUser("/mypage/requests/new");
   const categories = await getCategories();
 
   return (

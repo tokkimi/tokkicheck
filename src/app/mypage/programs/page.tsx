@@ -9,7 +9,6 @@ export const dynamic = "force-dynamic";
 
 export default async function ProgramsPage() {
   const { userId, isPremium } = await getSessionWithPlan();
-  if (!userId) return null;
 
   const [templates, userProgram] = await Promise.all([
     getProgramTemplates(),

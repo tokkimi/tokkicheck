@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
-import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { getDiaryEntries } from "@/lib/queries";
 import { DiaryClient } from "@/components/DiaryClient";
+import { requireUser } from "@/lib/authz";
 
 export const dynamic = "force-dynamic";
 
@@ -18,8 +18,7 @@ export default async function DiaryPage({
 }: {
   searchParams: Promise<{ date?: string }>;
 }) {
-  const session = await auth();
-  if (!session?.user) return null;
+  const session = await requireUser("/mypage/diary");
 
   const { date } = await searchParams;
   const activeDate = date && /^\d{4}-\d{2}-\d{2}$/.test(date) ? date : todayKst();

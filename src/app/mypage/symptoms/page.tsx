@@ -13,7 +13,6 @@ export default async function SymptomsPage({
   searchParams: Promise<{ productId?: string }>;
 }) {
   const { userId, isPremium } = await getSessionWithPlan();
-  if (!userId) return null;
 
   const { productId } = await searchParams;
 

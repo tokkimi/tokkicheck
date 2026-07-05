@@ -9,7 +9,6 @@ export const dynamic = "force-dynamic";
 
 export default async function NotificationsPage() {
   const { userId, isPremium } = await getSessionWithPlan();
-  if (!userId) return null;
 
   const notifications = isPremium
     ? await prisma.notification.findMany({

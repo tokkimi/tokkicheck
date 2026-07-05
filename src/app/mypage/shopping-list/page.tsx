@@ -9,7 +9,6 @@ export const dynamic = "force-dynamic";
 
 export default async function ShoppingListPage() {
   const { userId, isPremium } = await getSessionWithPlan();
-  if (!userId) return null;
 
   const items = isPremium
     ? await prisma.shoppingListItem.findMany({

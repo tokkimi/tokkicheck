@@ -11,9 +11,9 @@ import {
   ShoppingCart,
   Sparkles,
 } from "lucide-react";
-import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { isPremiumActive } from "@/lib/plan";
+import { requireUser } from "@/lib/authz";
 import { LogoutButton } from "@/components/LogoutButton";
 
 const menuItems = [
@@ -35,10 +35,7 @@ const statusLabel: Record<string, { text: string; className: string }> = {
 };
 
 export default async function MyPage() {
-  const session = await auth();
-  if (!session?.user) {
-    return null;
-  }
+  const session = await requireUser("/mypage");
 
   const requests = await prisma.productRequest.findMany({
     where: { userId: session.user.id },
